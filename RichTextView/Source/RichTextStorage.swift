@@ -10,16 +10,37 @@ import UIKit
 
 let RichTextViewDetectedDataHandlerAttributeName = "RichTextViewDetectedDataHandlerAttributeName"
 
-enum DetectedDataType: Int {
+enum DetectedDataType: Int, Printable{
     case Mention = 0
     case HashTag
     case URL
     case Email
+    
+    var description: String {
+        switch self {
+        case .Mention:
+            return "Mention"
+        case .HashTag:
+            return "HashTag"
+        case .URL:
+            return "URL"
+        case .Email:
+            return "Email"
+        }
+    }
 }
 
 class RichTextStorage: NSTextStorage {
     
     var backingStore: NSMutableAttributedString = NSMutableAttributedString()
+    
+    var mentionRanges = [NSRange]()
+    
+    var hashTagRanges = [NSRange]()
+    
+    var emailRanges = [NSRange]()
+    
+    var urlRanges = [NSRange]()
     
     override var string: String {
         return backingStore.string
@@ -53,6 +74,15 @@ class RichTextStorage: NSTextStorage {
         
         var paragraphRange = (self.string as NSString).paragraphRangeForRange(self.editedRange)
         self.removeAttribute(NSForegroundColorAttributeName, range: paragraphRange)
+        
+        mentionRanges = [NSRange]()
+        
+        hashTagRanges = [NSRange]()
+        
+        emailRanges = [NSRange]()
+        
+        urlRanges = [NSRange]()
+        
         //For Mention
         
         var mentionPattern = "@[^\\s:：,，@]+$?"
@@ -67,6 +97,8 @@ class RichTextStorage: NSTextStorage {
                 var textAttributes: [NSObject : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Mention.rawValue]
                 
                 self.addAttributes(textAttributes, range: result.range )
+                
+                self.mentionRanges.append(result.range)
 
             })
         }
@@ -86,6 +118,8 @@ class RichTextStorage: NSTextStorage {
                 
                 self.addAttributes(textAttributes, range: result.range )
                 
+                self.urlRanges.append(result.range)
+                
             })
         }
         
@@ -103,6 +137,8 @@ class RichTextStorage: NSTextStorage {
                 var textAttributes: [NSObject : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.HashTag.rawValue]
                 
                 self.addAttributes(textAttributes, range: result.range )
+                
+                self.hashTagRanges.append(result.range)
                 
             })
         }
@@ -122,6 +158,7 @@ class RichTextStorage: NSTextStorage {
                 
                 self.addAttributes(textAttributes, range: result.range )
                 
+                self.emailRanges.append(result.range)
             })
         }
         

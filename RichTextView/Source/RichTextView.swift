@@ -22,13 +22,9 @@ class RichTextView: UITextView {
     
     var delegateProxy: RichTextViewDelegateProxy!
     
-    var clickOnMention: ((mention: String) -> Void)?
+    var clickedOnData: ((string: String, dataType: DetectedDataType) -> Void)?
     
-    var clickOnHashTag: ((hashtag: String) -> Void)?
-    
-    var clickOnEmail: ((email: String) -> Void)?
-    
-    var clickOnURL: ((url: String) -> Void)?
+    var currentDetactedData: ((string: String, dataType: DetectedDataType) -> Void)?
     
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -45,27 +41,15 @@ class RichTextView: UITextView {
         delegateProxy = RichTextViewDelegateProxy(delegateProxy: delegateHandler)
     }
 
-    func handleClickOnMention(mention: String) {
-        if let clickOnMention = clickOnMention {
-            clickOnMention(mention: mention)
+    func handleClickedOnData(string: String, dataType: DetectedDataType ){
+        if let clickedOnData = clickedOnData {
+            clickedOnData(string: string, dataType: dataType)
         }
     }
     
-    func handleClickOnHashTag(hashTag: String) {
-        if let clickOnHashTag = clickOnHashTag {
-            clickOnHashTag(hashtag: hashTag)
-        }
-    }
-    
-    func handleClickOnEmail(email: String) {
-        if let clickOnEmail = clickOnEmail {
-            clickOnEmail(email: email)
-        }
-    }
-    
-    func handleClickOnURL(url: String) {
-        if let clickOnURL = clickOnURL {
-            clickOnURL(url: url)
+    func handleCurrentDetactedData(string: String, dataType: DetectedDataType) {
+        if let currentDetactedData = currentDetactedData {
+            currentDetactedData(string: string, dataType: dataType)
         }
     }
 

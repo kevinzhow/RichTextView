@@ -27,11 +27,20 @@ class ViewController: UIViewController {
         
         richTextView = RichTextView(frame: CGRectZero, textContainer: textContainer)
         
-        richTextView.text = "We are here so happy to make it #rock# with @kevinzhow and his blog is http://zhowkev.in"
+        richTextView.text = "We are here so happy to make it #rock# with @kevinzhow and his blog is http://zhowkev.in and My email is kevinchou.c@gmail.com"
         
         richTextView.editable = false
         
         richTextView.selectable = true
+        
+        richTextView.currentDetactedData = { (string, dataType) in
+            println("Current \(dataType.description) with \(string)")
+        }
+        
+        richTextView.clickedOnData = { (string, dataType) in
+            println("Clicked On \(dataType.description) with \(string)")
+        }
+
         
         view.addSubview(richTextView)
 

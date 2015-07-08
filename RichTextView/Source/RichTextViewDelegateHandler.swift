@@ -27,32 +27,67 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
         
         if let dataType = textView.attributedText.attribute(RichTextViewDetectedDataHandlerAttributeName, atIndex: characterRange.location, effectiveRange: nil) as? Int {
             
-            switch dataType {
-            case DetectedDataType.Mention.rawValue:
-                println("Click On Mention \(valueText)")
-                richTextView.handleClickOnMention(valueText)
-                
-            case DetectedDataType.HashTag.rawValue:
-                println("Click On HashTag \(valueText)")
-                richTextView.handleClickOnHashTag(valueText)
-                
-            case DetectedDataType.Email.rawValue:
-                println("Click On Email \(valueText)")
-                richTextView.handleClickOnEmail(valueText)
-                
-            case DetectedDataType.URL.rawValue:
-                println("Click On URL \(valueText)")
-                richTextView.handleClickOnURL(valueText)
-                
-            default:
-                break
-            }
+            richTextView.handleClickedOnData(valueText, dataType: DetectedDataType(rawValue: dataType)!)
             
         }
         return true
     }
     
+    func textViewCurrentDetactedString(string: String, dataType: DetectedDataType) {
+        richTextView.handleCurrentDetactedData(string, dataType: dataType)
+    }
+    
     func textViewDidChange(textView: UITextView) {
-        println("new \(textView.text)")
+        
+        if let textStorage = richTextView.layoutManager.textStorage as? RichTextStorage {
+            
+            var targetLocation = richTextView.selectedRange.location
+            
+            for range in textStorage.mentionRanges {
+                if range.location >= targetLocation || range.location + range.length >= targetLocation {
+
+                    
+                    var textValue = (textStorage.string as NSString).substringWithRange(range)
+                    
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.Mention)
+                    
+                    return
+                }
+            }
+            
+            for range in textStorage.emailRanges {
+                if range.location >= targetLocation || range.location + range.length >= targetLocation {
+                    
+                    var textValue = (textStorage.string as NSString).substringWithRange(range)
+                    
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.Email)
+                    
+                    return
+                }
+            }
+            
+            for range in textStorage.urlRanges {
+                if range.location >= targetLocation || range.location + range.length >= targetLocation {
+                    
+                    var textValue = (textStorage.string as NSString).substringWithRange(range)
+                    
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.URL)
+                    
+                    return
+                }
+            }
+            
+            for range in textStorage.hashTagRanges {
+                if range.location >= targetLocation || range.location + range.length >= targetLocation {
+
+                    var textValue = (textStorage.string as NSString).substringWithRange(range)
+                    
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.HashTag)
+                    
+                    return
+                }
+            }
+            
+        }
     }
 }

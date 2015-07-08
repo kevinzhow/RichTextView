@@ -11,7 +11,7 @@ import UIKit
 let RichTextViewDetectedDataHandlerAttributeName = "RichTextViewDetectedDataHandlerAttributeName"
 
 enum DetectedDataType: Int {
-    case Meation = 0
+    case Mention = 0
     case HashTag
     case URL
     case Email
@@ -53,18 +53,18 @@ class RichTextStorage: NSTextStorage {
         
         var paragraphRange = (self.string as NSString).paragraphRangeForRange(self.editedRange)
         self.removeAttribute(NSForegroundColorAttributeName, range: paragraphRange)
-        //For Meation
+        //For Mention
         
-        var meationPattern = "@[^\\s:：,，@]+$?"
+        var mentionPattern = "@[^\\s:：,，@]+$?"
         
-        var meationExpression = NSRegularExpression(pattern: meationPattern, options: NSRegularExpressionOptions.allZeros, error: nil)
+        var mentionExpression = NSRegularExpression(pattern: mentionPattern, options: NSRegularExpressionOptions.allZeros, error: nil)
         
-        if let meationExpression = meationExpression {
-            meationExpression.enumerateMatchesInString(self.string, options: NSMatchingOptions.allZeros, range: paragraphRange, usingBlock: { (result, flags, stop) -> Void in
+        if let mentionExpression = mentionExpression {
+            mentionExpression.enumerateMatchesInString(self.string, options: NSMatchingOptions.allZeros, range: paragraphRange, usingBlock: { (result, flags, stop) -> Void in
                 
                 var textValue = (self.string as NSString).substringWithRange(result.range)
                 
-                var textAttributes: [NSObject : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Meation.rawValue]
+                var textAttributes: [NSObject : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Mention.rawValue]
                 
                 self.addAttributes(textAttributes, range: result.range )
 

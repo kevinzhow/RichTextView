@@ -9,7 +9,7 @@
 import UIKit
 
 class RichTextViewDelegateHandler: NSObject {
-    
+    var richTextView: RichTextView!
 }
 
 extension RichTextViewDelegateHandler: UITextViewDelegate {
@@ -28,14 +28,22 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
         if let dataType = textView.attributedText.attribute(RichTextViewDetectedDataHandlerAttributeName, atIndex: characterRange.location, effectiveRange: nil) as? Int {
             
             switch dataType {
-            case DetectedDataType.Meation.rawValue:
-                println("Click On Meation \(valueText)")
+            case DetectedDataType.Mention.rawValue:
+                println("Click On Mention \(valueText)")
+                richTextView.handleClickOnMention(valueText)
+                
             case DetectedDataType.HashTag.rawValue:
                 println("Click On HashTag \(valueText)")
+                richTextView.handleClickOnHashTag(valueText)
+                
             case DetectedDataType.Email.rawValue:
                 println("Click On Email \(valueText)")
+                richTextView.handleClickOnEmail(valueText)
+                
             case DetectedDataType.URL.rawValue:
                 println("Click On URL \(valueText)")
+                richTextView.handleClickOnURL(valueText)
+                
             default:
                 break
             }

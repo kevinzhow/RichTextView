@@ -22,6 +22,14 @@ class RichTextView: UITextView {
     
     var delegateProxy: RichTextViewDelegateProxy!
     
+    var clickOnMention: ((mention: String) -> Void)?
+    
+    var clickOnHashTag: ((hashtag: String) -> Void)?
+    
+    var clickOnEmail: ((email: String) -> Void)?
+    
+    var clickOnURL: ((url: String) -> Void)?
+    
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         setup()
@@ -33,9 +41,33 @@ class RichTextView: UITextView {
     }
     
     func setup() {
+        delegateHandler.richTextView = self
         delegateProxy = RichTextViewDelegateProxy(delegateProxy: delegateHandler)
     }
 
+    func handleClickOnMention(mention: String) {
+        if let clickOnMention = clickOnMention {
+            clickOnMention(mention: mention)
+        }
+    }
+    
+    func handleClickOnHashTag(hashTag: String) {
+        if let clickOnHashTag = clickOnHashTag {
+            clickOnHashTag(hashtag: hashTag)
+        }
+    }
+    
+    func handleClickOnEmail(email: String) {
+        if let clickOnEmail = clickOnEmail {
+            clickOnEmail(email: email)
+        }
+    }
+    
+    func handleClickOnURL(url: String) {
+        if let clickOnURL = clickOnURL {
+            clickOnURL(url: url)
+        }
+    }
 
     override var delegate: UITextViewDelegate? {
         

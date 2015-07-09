@@ -37,6 +37,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
         richTextView.handleCurrentDetactedData(string, dataType: dataType)
     }
     
+    
     func textViewDidChange(textView: UITextView) {
         
         if let textStorage = richTextView.layoutManager.textStorage as? RichTextStorage {

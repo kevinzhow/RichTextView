@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         
         richTextView.text = "We are here so happy to make it #rock# with @kevinzhow \nhis blog is http://zhowkev.in and My email is kevinchou.c@gmail.com"
         
-        richTextView.editable = false // true for realtime editing
+        richTextView.editable = true // true for realtime editing
         
         richTextView.selectable = true
         
@@ -45,7 +45,7 @@ class ViewController: UIViewController {
             println("Clicked On \(dataType.description) with \(string)")
         }
         
-        richTextView.appendImage(UIImage(named: "WatchBlack")!, width: view.frame.width - 10.0)
+        richTextView.appendImage(UIImage(named: "WatchBlack")!, width: view.frame.width - 10)
 
         view.addSubview(richTextView)
 

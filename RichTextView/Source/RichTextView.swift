@@ -56,8 +56,56 @@ class RichTextView: UITextView {
             
             var radio:CGFloat = width / imageWidth
             
-            insertImage(image, size: CGSize(width: image.size.width*radio, height: image.size.height*radio), index: newLength + 1)
+            appendImage(image, size: CGSize(width: image.size.width*radio, height: image.size.height*radio))
+            
+            appendNewLine() 
         }
+    }
+    
+    func appendNewLine() {
+        
+        if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
+            
+            var newLineString = NSMutableAttributedString(string: "\n")
+            
+            newLineString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle(0), range: NSRange(location: 0, length: newLineString.length))
+            
+            newAttributedText.appendAttributedString(newLineString)
+            
+            attributedText = newAttributedText
+        }
+
+    }
+    
+    func appendImage(image: UIImage, size: CGSize){
+        
+        var attachment = NSTextAttachment(data: nil, ofType: nil)
+        attachment.image = image
+        attachment.bounds = CGRectMake(0, 0, size.width, size.height)
+        
+        if let attachmentAttributedString = NSAttributedString(attachment: attachment) as? NSMutableAttributedString {
+            // sets the paragraph styling of the text attachment
+            
+            attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle(0), range: NSRange(location: 0, length: attachmentAttributedString.length))
+            
+            if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
+                
+                newAttributedText.appendAttributedString(attachmentAttributedString)
+                
+                self.attributedText = newAttributedText
+            }
+        }
+    }
+    
+    private func paragraphStyle(spacing: CGFloat) -> NSMutableParagraphStyle {
+        
+        var paragraphStyle = NSMutableParagraphStyle()
+        
+        paragraphStyle.paragraphSpacing = spacing
+        
+        paragraphStyle.paragraphSpacingBefore = spacing
+        
+        return paragraphStyle
     }
     
     func insertImage(image: UIImage, size: CGSize, index: Int){
@@ -66,15 +114,24 @@ class RichTextView: UITextView {
         attachment.image = image
         attachment.bounds = CGRectMake(0, 0, size.width, size.height)
         
-        var attachmentAttributedString = NSAttributedString(attachment: attachment)
-        
-        if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
+        if let attachmentAttributedString = NSAttributedString(attachment: attachment) as? NSMutableAttributedString {
+            // sets the paragraph styling of the text attachment
             
-            newAttributedText.insertAttributedString(attachmentAttributedString, atIndex: index)
+            var paragraphStyle = NSMutableParagraphStyle()
             
-            self.attributedText = newAttributedText
+            paragraphStyle.paragraphSpacing = 10
+            
+            paragraphStyle.paragraphSpacingBefore = 10
+            
+            attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            
+            if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
+                
+                newAttributedText.insertAttributedString(attachmentAttributedString, atIndex: index)
+                
+                self.attributedText = newAttributedText
+            }
         }
-
     }
 
     override var delegate: UITextViewDelegate? {

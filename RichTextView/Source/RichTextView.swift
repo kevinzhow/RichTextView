@@ -41,6 +41,41 @@ class RichTextView: UITextView {
             currentDetactedData(string: string, dataType: dataType)
         }
     }
+    
+    func appendImage(image: UIImage, width: CGFloat) {
+        
+        if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
+            
+            newAttributedText.appendAttributedString(NSAttributedString(string: "\n"))
+            
+            var newLength = text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+            
+            self.attributedText = newAttributedText
+            
+            var imageWidth = image.size.width
+            
+            var radio:CGFloat = width / imageWidth
+            
+            insertImage(image, size: CGSize(width: image.size.width*radio, height: image.size.height*radio), index: newLength + 1)
+        }
+    }
+    
+    func insertImage(image: UIImage, size: CGSize, index: Int){
+        
+        var attachment = NSTextAttachment(data: nil, ofType: nil)
+        attachment.image = image
+        attachment.bounds = CGRectMake(0, 0, size.width, size.height)
+        
+        var attachmentAttributedString = NSAttributedString(attachment: attachment)
+        
+        if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
+            
+            newAttributedText.insertAttributedString(attachmentAttributedString, atIndex: index)
+            
+            self.attributedText = newAttributedText
+        }
+
+    }
 
     override var delegate: UITextViewDelegate? {
         

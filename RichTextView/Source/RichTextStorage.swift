@@ -60,8 +60,6 @@ class RichTextStorage: NSTextStorage {
     }
     
     override func setAttributes(attrs: [NSObject : AnyObject]!, range: NSRange) {
-        //        println("setAttributes:\(attrs) range:\(range)")
-        
         beginEditing()
         backingStore.setAttributes(attrs, range: range)
         edited(.EditedAttributes, range: range, changeInLength: 0)

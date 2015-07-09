@@ -44,6 +44,8 @@ class ViewController: UIViewController {
         richTextView.clickedOnData = { (string, dataType) in
             println("Clicked On \(dataType.description) with \(string)")
         }
+        
+        richTextView.appendImage(UIImage(named: "WatchBlack")!, width: view.frame.width - 10.0)
 
         view.addSubview(richTextView)
 

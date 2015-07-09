@@ -74,6 +74,8 @@ class RichTextStorage: NSTextStorage {
         
         var paragraphRange = (self.string as NSString).paragraphRangeForRange(self.editedRange)
         self.removeAttribute(NSForegroundColorAttributeName, range: paragraphRange)
+        self.removeAttribute(NSLinkAttributeName, range: paragraphRange)
+        self.removeAttribute(RichTextViewDetectedDataHandlerAttributeName, range: paragraphRange)
         
         mentionRanges = [NSRange]()
         

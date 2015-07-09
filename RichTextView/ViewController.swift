@@ -29,7 +29,7 @@ class ViewController: UIViewController {
         
         richTextView.text = "We are here so happy to make it #rock# with @kevinzhow and his blog is http://zhowkev.in and My email is kevinchou.c@gmail.com"
         
-        richTextView.editable = false
+        richTextView.editable = true
         
         richTextView.selectable = true
         

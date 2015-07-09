@@ -15,7 +15,6 @@
 		0AE153B01B4D606B00B186FF /* RichTextViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE153AF1B4D606B00B186FF /* RichTextViewTests.swift */; };
 		0AE153BA1B4D7E9E00B186FF /* RichTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE153B91B4D7E9E00B186FF /* RichTextView.swift */; };
 		0AE153BD1B4D80CC00B186FF /* RichTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE153BC1B4D80CC00B186FF /* RichTextStorage.swift */; };
-		0AE153BF1B4D8F5E00B186FF /* RichTextViewDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE153BE1B4D8F5E00B186FF /* RichTextViewDelegateProxy.swift */; };
 		0AE153C11B4D96AF00B186FF /* RichTextViewDelegateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE153C01B4D96AF00B186FF /* RichTextViewDelegateHandler.swift */; };
 /* End PBXBuildFile section */
 
@@ -42,7 +41,6 @@
 		0AE153AF1B4D606B00B186FF /* RichTextViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichTextViewTests.swift; sourceTree = "<group>"; };
 		0AE153B91B4D7E9E00B186FF /* RichTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RichTextView.swift; path = Source/RichTextView.swift; sourceTree = "<group>"; };
 		0AE153BC1B4D80CC00B186FF /* RichTextStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RichTextStorage.swift; path = Source/RichTextStorage.swift; sourceTree = "<group>"; };
-		0AE153BE1B4D8F5E00B186FF /* RichTextViewDelegateProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RichTextViewDelegateProxy.swift; path = Source/RichTextViewDelegateProxy.swift; sourceTree = "<group>"; };
 		0AE153C01B4D96AF00B186FF /* RichTextViewDelegateHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RichTextViewDelegateHandler.swift; path = Source/RichTextViewDelegateHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,7 +123,6 @@
 			isa = PBXGroup;
 			children = (
 				0AE153C01B4D96AF00B186FF /* RichTextViewDelegateHandler.swift */,
-				0AE153BE1B4D8F5E00B186FF /* RichTextViewDelegateProxy.swift */,
 				0AE153BC1B4D80CC00B186FF /* RichTextStorage.swift */,
 				0AE153B91B4D7E9E00B186FF /* RichTextView.swift */,
 			);
@@ -237,7 +234,6 @@
 				0AE1539C1B4D606B00B186FF /* ViewController.swift in Sources */,
 				0AE1539A1B4D606B00B186FF /* AppDelegate.swift in Sources */,
 				0AE153BA1B4D7E9E00B186FF /* RichTextView.swift in Sources */,
-				0AE153BF1B4D8F5E00B186FF /* RichTextViewDelegateProxy.swift in Sources */,
 				0AE153C11B4D96AF00B186FF /* RichTextViewDelegateHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

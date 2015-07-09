@@ -18,27 +18,16 @@ class RichTextView: UITextView {
     }
     */
     
-    var delegateHandler = RichTextViewDelegateHandler()
-    
-    var delegateProxy: RichTextViewDelegateProxy!
-    
     var clickedOnData: ((string: String, dataType: DetectedDataType) -> Void)?
     
     var currentDetactedData: ((string: String, dataType: DetectedDataType) -> Void)?
     
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
-        setup()
     }
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        setup()
-    }
-    
-    func setup() {
-        delegateHandler.richTextView = self
-        delegateProxy = RichTextViewDelegateProxy(delegateProxy: delegateHandler)
     }
 
     func handleClickedOnData(string: String, dataType: DetectedDataType ){
@@ -55,14 +44,8 @@ class RichTextView: UITextView {
 
     override var delegate: UITextViewDelegate? {
         
-        get {
-            return delegateProxy
-        }
-        
-        set (newDelegate){
-            if let newDelegate = newDelegate {
-                delegateProxy.delegateTargets.addObject(newDelegate)
-            }
+        didSet {
+            (delegate as! RichTextViewDelegateHandler).richTextView = self
         }
         
     }

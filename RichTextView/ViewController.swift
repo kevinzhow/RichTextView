@@ -16,6 +16,8 @@ class ViewController: UIViewController {
     
     var textContainer = NSTextContainer()
     
+    var richTextViewDelegate =  RichTextViewDelegateHandler() //Subclass this to Modify your needs and Make sure it will retain
+    
     var richTextView: RichTextView!
     
     override func viewDidLoad() {
@@ -27,9 +29,11 @@ class ViewController: UIViewController {
         
         richTextView = RichTextView(frame: CGRectZero, textContainer: textContainer)
         
-        richTextView.text = "We are here so happy to make it #rock# with @kevinzhow and his blog is http://zhowkev.in and My email is kevinchou.c@gmail.com"
+        richTextView.delegate = richTextViewDelegate
         
-        richTextView.editable = true
+        richTextView.text = "We are here so happy to make it #rock# with @kevinzhow \nhis blog is http://zhowkev.in and My email is kevinchou.c@gmail.com"
+        
+        richTextView.editable = false // true for realtime editing
         
         richTextView.selectable = true
         
@@ -41,7 +45,6 @@ class ViewController: UIViewController {
             println("Clicked On \(dataType.description) with \(string)")
         }
 
-        
         view.addSubview(richTextView)
 
         // Do any additional setup after loading the view, typically from a nib.

@@ -33,6 +33,8 @@ class ViewController: UIViewController {
         
         richTextView.text = "We are here so happy to make it #rock# with @kevinzhow \nhis blog is http://zhowkev.in and My email is kevinchou.c@gmail.com"
         
+        richTextView.placeholder = "Hello"
+        
         richTextView.editable = true // true for realtime editing
         
         richTextView.selectable = true

@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>7469D5FF-09D3-4E15-BE9A-396C716CC1E1</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>RichTextView</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>EF2885DCF93A7C651E75F07B38C23C5ADF0ACCFB</key>
 		<string>github.com:kevinzhow/RichTextView.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>RichTextView.xcodeproj/project.xcworkspace</string>
+	<string>RichTextView.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>EF2885DCF93A7C651E75F07B38C23C5ADF0ACCFB</key>

@@ -22,12 +22,49 @@ class RichTextView: UITextView {
     
     var currentDetactedData: ((string: String, dataType: DetectedDataType) -> Void)?
     
+    var placeholder: String? {
+        didSet {
+            var attributes =  NSMutableDictionary()
+            
+            if (isFirstResponder() && typingAttributes != nil) {
+                attributes.addEntriesFromDictionary(typingAttributes)
+            } else {
+                if let font = font {
+                    attributes[NSFontAttributeName] = font
+                }
+
+                attributes[NSForegroundColorAttributeName] = UIColor(white: 0.7, alpha: 1.0)
+                
+                if textAlignment != NSTextAlignment.Left {
+                    var paragraph = NSMutableParagraphStyle()
+                    paragraph.alignment = textAlignment
+                    attributes[NSParagraphStyleAttributeName] = paragraph
+                }
+            }
+            
+            self.attributedPlaceholder = NSAttributedString(string: placeholder!, attributes: attributes as [NSObject : AnyObject])
+        }
+    }
+
+    
+    var attributedPlaceholder: NSAttributedString?
+    
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
+        initialize()
     }
     
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        initialize()
+    }
+    
+    func initialize() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "textChanged", name: UITextViewTextDidChangeNotification, object: self)
+    }
+    
+    func textChanged() {
+        self.setNeedsDisplay()
     }
 
     func handleClickedOnData(string: String, dataType: DetectedDataType ){
@@ -137,8 +174,50 @@ class RichTextView: UITextView {
     override var delegate: UITextViewDelegate? {
         
         didSet {
-            (delegate as! RichTextViewDelegateHandler).richTextView = self
+            if let delegate  = delegate as? RichTextViewDelegateHandler {
+                delegate.richTextView = self
+            }
         }
         
     }
+    
+    func placeholderRectForBounds(bounds: CGRect) -> CGRect {
+        var rect = UIEdgeInsetsInsetRect(bounds, self.contentInset)
+        
+        if self.respondsToSelector("textContainer") {
+            rect = UIEdgeInsetsInsetRect(rect, self.textContainerInset)
+            var padding = self.textContainer.lineFragmentPadding
+            rect.origin.x += padding
+            rect.size.width -= padding * 2.0
+        } else {
+            if self.contentInset.left == 0.0 {
+                rect.origin.x += 8.0
+            }
+            rect.origin.y += 8.0
+        }
+        
+        return rect;
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if let attributedPlaceholder = attributedPlaceholder {
+            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
+                self.setNeedsDisplay()
+            }
+        }
+    }
+    
+    override func drawRect(rect: CGRect) {
+        super.drawRect(rect)
+        
+        if let attributedPlaceholder = attributedPlaceholder {
+            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
+                var placeholderRect = placeholderRectForBounds(self.bounds)
+                attributedPlaceholder.drawInRect(placeholderRect)
+            }
+        }
+    }
+
 }

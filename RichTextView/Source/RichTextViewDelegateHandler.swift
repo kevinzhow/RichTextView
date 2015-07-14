@@ -9,7 +9,7 @@
 import UIKit
 
 public class RichTextViewDelegateHandler: NSObject {
-    var richTextView: RichTextView!
+    public var richTextView: RichTextView!
 }
 
 extension RichTextViewDelegateHandler: UITextViewDelegate {

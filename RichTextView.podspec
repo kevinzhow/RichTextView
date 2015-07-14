@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
 
   s.name         = "RichTextView"
-  s.version      = "0.1"
+  s.version      = "0.2"
   s.summary      = "RichTextView based On TextKit"
 
   s.description  = <<-DESC
-                   RichTextView based On TextKit
+                   RichTextView based On TextKit, With Mention, Hashtag Feature
                    DESC
 
   s.homepage     = "https://github.com/kevinzhow/RichTextView"
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "8.0"
   # s.osx.deployment_target = "10.7"
 
-  s.source       = { :git => "git@github.com:kevinzhow/RichTextView.git", :tag => s.version }
+  s.source       = { :git => "https://github.com/kevinzhow/RichTextView.git", :tag => s.version }
   s.source_files  = "RichTextView/Source/*.swift"
   s.requires_arc = true
 

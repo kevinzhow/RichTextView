@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RichTextView: UITextView {
+public class RichTextView: UITextView {
 
     /*
     // Only override drawRect: if you perform custom drawing.
@@ -49,12 +49,12 @@ class RichTextView: UITextView {
     
     var attributedPlaceholder: NSAttributedString?
     
-    override init(frame: CGRect, textContainer: NSTextContainer?) {
+    override public init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         initialize()
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         initialize()
     }
@@ -171,7 +171,7 @@ class RichTextView: UITextView {
         }
     }
 
-    override var delegate: UITextViewDelegate? {
+    override public var delegate: UITextViewDelegate? {
         
         didSet {
             if let delegate  = delegate as? RichTextViewDelegateHandler {
@@ -199,7 +199,7 @@ class RichTextView: UITextView {
         return rect;
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         
         if let attributedPlaceholder = attributedPlaceholder {
@@ -209,7 +209,7 @@ class RichTextView: UITextView {
         }
     }
     
-    override func drawRect(rect: CGRect) {
+    override public func drawRect(rect: CGRect) {
         super.drawRect(rect)
         
         if let attributedPlaceholder = attributedPlaceholder {

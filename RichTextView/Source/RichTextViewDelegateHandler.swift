@@ -8,18 +8,18 @@
 
 import UIKit
 
-class RichTextViewDelegateHandler: NSObject {
+public class RichTextViewDelegateHandler: NSObject {
     var richTextView: RichTextView!
 }
 
 extension RichTextViewDelegateHandler: UITextViewDelegate {
     
-    func textView(textView: UITextView, shouldInteractWithTextAttachment textAttachment: NSTextAttachment, inRange characterRange: NSRange) -> Bool {
+    public func textView(textView: UITextView, shouldInteractWithTextAttachment textAttachment: NSTextAttachment, inRange characterRange: NSRange) -> Bool {
         println("Should interact with Attachment")
         return true
     }
 
-    func textView(textView: UITextView, shouldInteractWithURL URL: NSURL, inRange characterRange: NSRange) -> Bool {
+    public func textView(textView: UITextView, shouldInteractWithURL URL: NSURL, inRange characterRange: NSRange) -> Bool {
         
         var textString: NSString = textView.text
         
@@ -38,7 +38,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
     }
     
     
-    func textViewDidChange(textView: UITextView) {
+    public func textViewDidChange(textView: UITextView) {
         
         if let textStorage = richTextView.layoutManager.textStorage as? RichTextStorage {
             

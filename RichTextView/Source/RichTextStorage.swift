@@ -30,7 +30,7 @@ enum DetectedDataType: Int, Printable{
     }
 }
 
-class RichTextStorage: NSTextStorage {
+public class RichTextStorage: NSTextStorage {
     
     var backingStore: NSMutableAttributedString = NSMutableAttributedString()
     
@@ -42,15 +42,15 @@ class RichTextStorage: NSTextStorage {
     
     var urlRanges = [NSRange]()
     
-    override var string: String {
+    override public var string: String {
         return backingStore.string
     }
     
-    override func attributesAtIndex(index: Int, effectiveRange range: NSRangePointer) -> [NSObject : AnyObject] {
+    override public func attributesAtIndex(index: Int, effectiveRange range: NSRangePointer) -> [NSObject : AnyObject] {
         return backingStore.attributesAtIndex(index, effectiveRange: range)
     }
     
-    override func replaceCharactersInRange(range: NSRange, withString str: String) {
+    override public func replaceCharactersInRange(range: NSRange, withString str: String) {
         //        println("replaceCharactersInRange:\(range) withString:\(str)")z
         
         beginEditing()
@@ -59,14 +59,14 @@ class RichTextStorage: NSTextStorage {
         endEditing()
     }
     
-    override func setAttributes(attrs: [NSObject : AnyObject]!, range: NSRange) {
+    override public func setAttributes(attrs: [NSObject : AnyObject]!, range: NSRange) {
         beginEditing()
         backingStore.setAttributes(attrs, range: range)
         edited(.EditedAttributes, range: range, changeInLength: 0)
         endEditing()
     }
     
-    override func processEditing() {
+    override public func processEditing() {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 8
         

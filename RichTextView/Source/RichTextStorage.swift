@@ -16,7 +16,7 @@ public enum DetectedDataType: Int, Printable{
     case URL
     case Email
 
-    var description: String {
+    public var description: String {
         switch self {
         case .Mention:
             return "Mention"

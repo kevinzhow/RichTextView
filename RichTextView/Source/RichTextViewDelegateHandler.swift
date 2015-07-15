@@ -33,8 +33,8 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
         return true
     }
 
-    func textViewCurrentDetactedString(string: String, dataType: DetectedDataType) {
-        richTextView.handleCurrentDetactedData(string, dataType: dataType)
+    func textViewCurrentDetactedString(string: String, dataType: DetectedDataType, range: NSRange) {
+        richTextView.handleCurrentDetactedData(string, dataType: dataType, range: range)
     }
 
 
@@ -50,7 +50,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
 
                     var textValue = (textStorage.string as NSString).substringWithRange(range)
 
-                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.Mention)
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.Mention, range: range)
 
                     return
                 }
@@ -61,7 +61,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
 
                     var textValue = (textStorage.string as NSString).substringWithRange(range)
 
-                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.Email)
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.Email, range: range)
 
                     return
                 }
@@ -72,7 +72,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
 
                     var textValue = (textStorage.string as NSString).substringWithRange(range)
 
-                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.URL)
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.URL, range: range)
 
                     return
                 }
@@ -83,7 +83,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
 
                     var textValue = (textStorage.string as NSString).substringWithRange(range)
 
-                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.HashTag)
+                    textViewCurrentDetactedString(textValue, dataType: DetectedDataType.HashTag, range: range)
 
                     return
                 }

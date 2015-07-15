@@ -16,9 +16,22 @@ class ViewController: UIViewController {
     
     var textContainer = NSTextContainer()
     
+    @IBOutlet weak var replaceButton: UIButton!
+    
     var richTextViewDelegate =  RichTextViewDelegateHandler() //Subclass this to Modify your needs and Make sure it will retain
     
     var richTextView: RichTextView!
+    
+    var currentRange: NSRange?
+    
+    @IBAction func replaceWithUser(sender: AnyObject) {
+        if let currentRange = currentRange {
+            
+            textStorage.replaceCharactersInRange(currentRange, withString: "@kevinzhow")
+            
+            richTextView.selectedRange = NSMakeRange(currentRange.location + "@kevinzhow".length, 0)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,8 +52,12 @@ class ViewController: UIViewController {
         
         richTextView.selectable = true
         
-        richTextView.currentDetactedData = { (string, dataType) in
-            println("Current \(dataType.description) with \(string)")
+        richTextView.currentDetactedData = { (string, dataType, range) in
+            println("Current \(dataType.description) with \(string) at \(range)")
+            
+            self.currentRange = range
+            
+            self.view.bringSubviewToFront(self.replaceButton)
         }
         
         richTextView.clickedOnData = { (string, dataType) in

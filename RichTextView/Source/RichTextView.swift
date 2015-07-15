@@ -20,7 +20,7 @@ public class RichTextView: UITextView {
     
     public var clickedOnData: ((string: String, dataType: DetectedDataType) -> Void)?
     
-    public var currentDetactedData: ((string: String, dataType: DetectedDataType) -> Void)?
+    public var currentDetactedData: ((string: String, dataType: DetectedDataType, range: NSRange) -> Void)?
     
     public var placeholder: String? {
         didSet {
@@ -73,9 +73,9 @@ public class RichTextView: UITextView {
         }
     }
     
-    func handleCurrentDetactedData(string: String, dataType: DetectedDataType) {
+    func handleCurrentDetactedData(string: String, dataType: DetectedDataType, range: NSRange) {
         if let currentDetactedData = currentDetactedData {
-            currentDetactedData(string: string, dataType: dataType)
+            currentDetactedData(string: string, dataType: dataType, range: range)
         }
     }
     

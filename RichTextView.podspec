@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "RichTextView"
-  s.version      = "0.2.5"
+  s.version      = "0.2.6"
   s.summary      = "RichTextView based On TextKit"
 
   s.description  = <<-DESC

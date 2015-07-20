@@ -27,7 +27,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
 
         if let dataType = textView.attributedText.attribute(RichTextViewDetectedDataHandlerAttributeName, atIndex: characterRange.location, effectiveRange: nil) as? Int {
 
-            richTextView.handleClickedOnData(valueText, dataType: DetectedDataType(rawValue: dataType)!)
+            richTextView.handleClickedOnData(valueText, dataType: DetectedDataType(rawValue: dataType)!, range: characterRange)
 
         }
         return true

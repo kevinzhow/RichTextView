@@ -18,7 +18,7 @@ public class RichTextView: UITextView {
     }
     */
     
-    public var clickedOnData: ((string: String, dataType: DetectedDataType) -> Void)?
+    public var clickedOnData: ((string: String, dataType: DetectedDataType, range: NSRange) -> Void)?
     
     public var currentDetactedData: ((string: String, dataType: DetectedDataType, range: NSRange) -> Void)?
     
@@ -67,9 +67,9 @@ public class RichTextView: UITextView {
         self.setNeedsDisplay()
     }
     
-    func handleClickedOnData(string: String, dataType: DetectedDataType ){
+    func handleClickedOnData(string: String, dataType: DetectedDataType, range: NSRange ){
         if let clickedOnData = clickedOnData {
-            clickedOnData(string: string, dataType: dataType)
+            clickedOnData(string: string, dataType: dataType, range: range)
         }
     }
     

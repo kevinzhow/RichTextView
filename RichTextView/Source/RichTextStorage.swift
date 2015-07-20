@@ -15,6 +15,7 @@ public enum DetectedDataType: Int, Printable{
     case HashTag
     case URL
     case Email
+    case Custom
     
     public var description: String {
         switch self {
@@ -26,6 +27,8 @@ public enum DetectedDataType: Int, Printable{
             return "URL"
         case .Email:
             return "Email"
+        case .Custom:
+            return "Custom"
         }
     }
 }
@@ -43,6 +46,8 @@ public class RichTextStorage: NSTextStorage {
     var emailRanges = [NSRange]()
     
     var urlRanges = [NSRange]()
+    
+    public var customRanges = [NSRange]()
     
     override public var string: String {
         return backingStore.string
@@ -168,7 +173,21 @@ public class RichTextStorage: NSTextStorage {
             })
         }
         
+        //For Custom Range
+        
+        for range in customRanges {
+            var textAttributes: [NSObject : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: "CustomRange", RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Custom.rawValue]
+            
+            self.addAttributes(textAttributes, range: range )
+        }
+        
         super.processEditing()
+    }
+    
+    public func addTextAttributesOnRange(range: NSRange) {
+        beginEditing()
+
+        endEditing()
     }
     
     

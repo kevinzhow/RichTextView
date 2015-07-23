@@ -9,6 +9,7 @@
 import UIKit
 
 let RichTextViewDetectedDataHandlerAttributeName = "RichTextViewDetectedDataHandlerAttributeName"
+let RichTextViewImageAttributeName = "RichTextViewImageAttributeName"
 
 public enum DetectedDataType: Int, Printable{
     case Mention = 0
@@ -35,7 +36,7 @@ public enum DetectedDataType: Int, Printable{
 
 public class RichTextStorage: NSTextStorage {
     
-    public var defaultTextStyle: [String: NSObject]?
+    public var defaultTextStyle: [String: AnyObject]?
     
     var backingStore: NSMutableAttributedString = NSMutableAttributedString()
     
@@ -74,8 +75,6 @@ public class RichTextStorage: NSTextStorage {
     }
     
     override public func processEditing() {
-        var paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 8
         
         var paragraphRange = (self.string as NSString).paragraphRangeForRange(self.editedRange)
         self.removeAttribute(NSForegroundColorAttributeName, range: paragraphRange)

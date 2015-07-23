@@ -79,7 +79,7 @@ public class RichTextView: UITextView {
         }
     }
     
-    public func appendImage(image: UIImage, width: CGFloat) {
+    public func appendImage(imageName: String ,image: UIImage, width: CGFloat) {
         
         if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
             
@@ -93,7 +93,7 @@ public class RichTextView: UITextView {
             
             var radio:CGFloat = width / imageWidth
             
-            appendImage(image, size: CGSize(width: image.size.width*radio, height: image.size.height*radio))
+            appendImage(imageName, image: image, size: CGSize(width: image.size.width*radio, height: image.size.height*radio))
             
             appendNewLine()
         }
@@ -114,7 +114,7 @@ public class RichTextView: UITextView {
         
     }
     
-    public func appendImage(image: UIImage, size: CGSize){
+    public func appendImage(imageName: String ,image: UIImage, size: CGSize){
         
         var attachment = NSTextAttachment(data: nil, ofType: nil)
         attachment.image = image
@@ -124,6 +124,7 @@ public class RichTextView: UITextView {
             // sets the paragraph styling of the text attachment
             
             attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle(0), range: NSRange(location: 0, length: attachmentAttributedString.length))
+            attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
@@ -132,6 +133,26 @@ public class RichTextView: UITextView {
                 self.attributedText = newAttributedText
             }
         }
+    }
+    
+    public func findAllImageRange() -> [[String : NSRange]]?{
+        
+        var finalRange = [[String : NSRange]]()
+        
+        self.attributedText.enumerateAttribute(RichTextViewImageAttributeName, inRange: NSRange(location: 0, length: self.attributedText.length), options: nil, usingBlock: { (value, range, finish) in
+            
+            if let value = value as? String {
+                finalRange.append([value :  range])
+            }
+            
+        })
+        
+        if finalRange.count > 0 {
+            return finalRange
+        } else {
+            return nil
+        }
+        
     }
     
     private func paragraphStyle(spacing: CGFloat) -> NSMutableParagraphStyle {
@@ -145,7 +166,7 @@ public class RichTextView: UITextView {
         return paragraphStyle
     }
     
-    public func insertImage(image: UIImage, size: CGSize, index: Int){
+    public func insertImage(imageName: String, image: UIImage, size: CGSize, index: Int){
         
         var attachment = NSTextAttachment(data: nil, ofType: nil)
         attachment.image = image
@@ -161,6 +182,7 @@ public class RichTextView: UITextView {
             paragraphStyle.paragraphSpacingBefore = 10
             
             attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 

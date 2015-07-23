@@ -9,6 +9,19 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    var CommentReplyTextViewStyle : [String : AnyObject] {
+        get {
+            
+            let paraStyle = NSMutableParagraphStyle()
+            
+            paraStyle.lineBreakMode = NSLineBreakMode.ByCharWrapping
+            
+            return [NSFontAttributeName: UIFont.systemFontOfSize(15.0),
+                NSParagraphStyleAttributeName: paraStyle
+            ]
+        }
+    }
 
     var textStorage = RichTextStorage()
     
@@ -24,6 +37,19 @@ class ViewController: UIViewController {
     
     var currentRange: NSRange?
     
+    func sizeHeightWithText(attrString: NSString, width: CGFloat, textAttributes: [NSObject : AnyObject]) -> CGSize {
+        
+        //    var attributeString = NSAttributedString(string: attrString as String, attributes: textAttributes)
+        
+        //    var line = CTLineCreateWithAttributedString(attributeString)
+        //    var bounds = CTLineGetBoundsWithOptions(line, CTLineBoundsOptions.UseGlyphPathBounds)
+        
+        var rect = attrString.boundingRectWithSize(CGSizeMake(width, CGFloat.max), options: .UsesLineFragmentOrigin | .UsesFontLeading, attributes: textAttributes, context: nil)
+        
+        return CGSize(width: ceil(rect.width), height: ceil(rect.height))
+    }
+
+    
     @IBAction func replaceWithUser(sender: AnyObject) {
         if let currentRange = currentRange {
             
@@ -37,16 +63,34 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         textStorage.addLayoutManager(layoutManager)
-        
+
         layoutManager.addTextContainer(textContainer)
         
         richTextView = RichTextView(frame: CGRectZero, textContainer: textContainer)
         
+        richTextView.textContainer.lineBreakMode = NSLineBreakMode.ByCharWrapping
+        
+//        richTextView.textContainer.lineFragmentPadding = 0
+        
+        richTextView.textContainerInset = UIEdgeInsetsZero
+        
         richTextView.delegate = richTextViewDelegate
         
-        richTextView.text = "We are here so happy to make it #rock# with @kevinzhow \nhis blog is http://zhowkev.in and My email is kevinchou.c@gmail.com"
+        richTextView.font = UIFont.systemFontOfSize(15.0)
         
-        richTextView.placeholder = "Hello"
+        richTextView.scrollEnabled = true
+        
+        richTextView.text = "I am @kevinzhow and My email is kevinchou.c@gmail.com #Catch# \n you can find my blog at http://zhowkev.in"
+        
+//        richTextView.backgroundColor = UIColor.redColor()
+        
+        textStorage.defaultTextStyle = CommentReplyTextViewStyle
+        
+        var newSize = sizeHeightWithText(richTextView.text, width: 350, textAttributes: CommentReplyTextViewStyle)
+        
+        richTextView.frame = CGRect(x: 0, y: 20, width: 350 , height: newSize.height + 400)
+        
+//        richTextView.placeholder = "Hello"
         
         richTextView.editable = true // true for realtime editing
         
@@ -60,13 +104,17 @@ class ViewController: UIViewController {
             self.view.bringSubviewToFront(self.replaceButton)
         }
         
-        richTextView.clickedOnData = { (string, dataType) in
+        richTextView.clickedOnData = { (string, dataType, range) in
             println("Clicked On \(dataType.description) with \(string)")
         }
         
-        richTextView.insertImage(UIImage(named: "WatchBlack")!, size: CGSize(width: 10, height: 10), index: 2)
+        richTextView.insertImage("smallWatch", image: UIImage(named: "WatchBlack")!, size: CGSize(width: 10, height: 10), index: 2)
         
-        richTextView.appendImage(UIImage(named: "WatchBlack")!, width: view.frame.width - 10)
+        richTextView.appendImage("bigWatch", image: UIImage(named: "WatchBlack")!, width: view.frame.width - 10)
+        
+        var ranges = richTextView.findAllImageRange()
+        
+        println(ranges)
 
         view.addSubview(richTextView)
 
@@ -76,7 +124,7 @@ class ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        richTextView.frame = CGRect(x: 0, y: 20, width: view.bounds.width, height: view.bounds.height)
+
     }
 
     override func didReceiveMemoryWarning() {

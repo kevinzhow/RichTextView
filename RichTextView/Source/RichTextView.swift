@@ -110,15 +110,17 @@ public class RichTextView: UITextView {
     }
     
     func enumerateLinkRangesContainingLocation(location: CGPoint, complete: (NSRange) -> Void) {
+        
         var found = false
         
         self.attributedText.enumerateAttribute(RichTextViewDetectedDataHandlerAttributeName, inRange: NSMakeRange(0, attributedText.length), options: nil, usingBlock: { (value, range, stop) in
             
             if let value: AnyObject = value   {
-
+                
                 self.enumerateViewRectsForRanges([NSValue(range: range)], complete: { (rect, range, stop) -> Void in
                     
                     if !found {
+                        
                         if CGRectContainsPoint(rect, location) {
                             
                             self.drawRoundedCornerForRange(range, rect: rect)
@@ -134,6 +136,32 @@ public class RichTextView: UITextView {
             }
         })
         
+        if !found {
+            self.attributedText.enumerateAttribute(RichTextViewImageAttributeName, inRange: NSMakeRange(0, attributedText.length), options: nil, usingBlock: { (value, range, stop) in
+                
+                if let value: AnyObject = value   {
+                    
+                    self.enumerateViewRectsForRanges([NSValue(range: range)], complete: { (rect, range, stop) -> Void in
+                        
+                        if !found {
+                            
+                            if CGRectContainsPoint(rect, location) {
+                                
+                                self.drawRoundedCornerForRange(range, rect: rect)
+                                
+                                found = true
+                                
+                                complete(range)
+                            }
+                            
+                        } else {
+                            println("Found")
+                        }
+                    })
+                }
+            })
+        }
+        
         return
     }
     
@@ -142,16 +170,19 @@ public class RichTextView: UITextView {
         for rangeValue in ranges {
             
             let range = rangeValue.rangeValue
+            
             let glyphRange = layoutManager.glyphRangeForCharacterRange(range, actualCharacterRange: nil)
             
             layoutManager.enumerateEnclosingRectsForGlyphRange(glyphRange, withinSelectedGlyphRange: NSMakeRange(NSNotFound, 0), inTextContainer: textContainer, usingBlock: { (rect, stop) -> Void in
                 var rect = rect
+                
                 rect.origin.x += self.textContainerInset.left
                 rect.origin.y += self.textContainerInset.top
                 rect = UIEdgeInsetsInsetRect(rect, self.tapAreaInsets)
                 
                 complete(rect: rect, range: range, stop: true)
             })
+            
         }
         
         return
@@ -232,9 +263,10 @@ public class RichTextView: UITextView {
         if let attachmentAttributedString = NSAttributedString(attachment: attachment) as? NSMutableAttributedString {
             // sets the paragraph styling of the text attachment
             
-            attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle(0), range: NSRange(location: 0, length: attachmentAttributedString.length))
-            attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
-            attachmentAttributedString.addAttribute(RichTextViewDetectedDataHandlerAttributeName, value: DetectedDataType.Image.rawValue, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            
+            let attr: [NSObject: AnyObject] = [NSParagraphStyleAttributeName: paragraphStyle(0), RichTextViewImageAttributeName: imageName, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Image.rawValue]
+            
+            attachmentAttributedString.addAttributes(attr, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
@@ -313,9 +345,9 @@ public class RichTextView: UITextView {
             
             paragraphStyle.paragraphSpacingBefore = 10
             
-            attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: attachmentAttributedString.length))
-            attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
-            attachmentAttributedString.addAttribute(RichTextViewDetectedDataHandlerAttributeName, value: DetectedDataType.Image.rawValue, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            let attr: [NSObject: AnyObject] = [NSParagraphStyleAttributeName: paragraphStyle, RichTextViewImageAttributeName: imageName, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Image.rawValue]
+            
+            attachmentAttributedString.addAttributes(attr, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
@@ -341,9 +373,9 @@ public class RichTextView: UITextView {
             
             paragraphStyle.paragraphSpacingBefore = 10
             
-            attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: attachmentAttributedString.length))
-            attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
-            attachmentAttributedString.addAttribute(RichTextViewDetectedDataHandlerAttributeName, value: DetectedDataType.Image.rawValue, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            let attr: [NSObject: AnyObject] = [NSParagraphStyleAttributeName: paragraphStyle, RichTextViewImageAttributeName: imageName, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Image.rawValue]
+            
+            attachmentAttributedString.addAttributes(attr, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 

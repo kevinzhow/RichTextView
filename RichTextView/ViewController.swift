@@ -98,10 +98,11 @@ class ViewController: UIViewController {
             println("Clicked On \(dataType.description) with \(string)")
         }
         
-        richTextView.insertImage("smallWatch", image: UIImage(named: "WatchBlack")!, size: CGSize(width: 10, height: 10), index: 2)
+//        richTextView.insertImage("smallWatch", image: UIImage(named: "WatchBlack")!, size: CGSize(width: 10, height: 10), index: 2)
         
+
         richTextView.appendImage("bigWatch", image: UIImage(named: "WatchBlack")!, width: view.frame.width - 10)
-        
+        println(richTextView.attributedText)
         var ranges = richTextView.findAllImageRange()
         
         println(ranges)

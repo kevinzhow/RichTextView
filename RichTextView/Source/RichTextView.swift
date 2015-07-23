@@ -28,6 +28,10 @@ public class RichTextView: UITextView {
     
     var richTextContainer = NSTextContainer()
     
+    public var placeHolderLabel = UILabel(frame: CGRectZero)
+    
+    public var shouldUpdate = true
+    
     public var linkGestureRecognizer: UITapGestureRecognizer?
     
     public let tapAreaInsets =  UIEdgeInsetsMake(-2, -2, -2, -2)
@@ -58,7 +62,19 @@ public class RichTextView: UITextView {
         }
     }
     
-    public var attributedPlaceholder: NSAttributedString?
+    public var attributedPlaceholder: NSAttributedString? {
+        didSet {
+            setupPlaceHolderLabel()
+        }
+    }
+    
+    func setupPlaceHolderLabel() {
+        placeHolderLabel.attributedText = attributedPlaceholder
+        
+        placeHolderLabel.sizeToFit()
+
+        placeHolderLabel.frame = placeholderRectForBounds(placeHolderLabel.bounds)
+    }
     
     override public init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -81,6 +97,10 @@ public class RichTextView: UITextView {
     
     func initialize() {
 
+        placeHolderLabel.hidden = false
+        
+        addSubview(placeHolderLabel)
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "textChanged", name: UITextViewTextDidChangeNotification, object: self)
     }
     
@@ -216,6 +236,14 @@ public class RichTextView: UITextView {
     }
     
     func textChanged() {
+        if let attributedPlaceholder = attributedPlaceholder {
+            if (text as NSString).length == 0 {
+                placeHolderLabel.hidden = false
+            } else {
+                placeHolderLabel.hidden = true
+            }
+        }
+
         self.setNeedsDisplay()
     }
     
@@ -399,13 +427,12 @@ public class RichTextView: UITextView {
     }
     
     func placeholderRectForBounds(bounds: CGRect) -> CGRect {
-        var rect = UIEdgeInsetsInsetRect(bounds, self.contentInset)
+        var rect = bounds
         
         if self.respondsToSelector("textContainer") {
-            rect = UIEdgeInsetsInsetRect(rect, self.textContainerInset)
             var padding = self.textContainer.lineFragmentPadding
             rect.origin.x += padding
-            rect.size.width -= padding * 2.0
+            rect.origin.y += padding * 1.5
         } else {
             if self.contentInset.left == 0.0 {
                 rect.origin.x += 8.0
@@ -414,27 +441,6 @@ public class RichTextView: UITextView {
         }
         
         return rect;
-    }
-    
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if let attributedPlaceholder = attributedPlaceholder {
-            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
-                self.setNeedsDisplay()
-            }
-        }
-    }
-    
-    override public func drawRect(rect: CGRect) {
-        super.drawRect(rect)
-        
-        if let attributedPlaceholder = attributedPlaceholder {
-            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
-                var placeholderRect = placeholderRectForBounds(self.bounds)
-                attributedPlaceholder.drawInRect(placeholderRect)
-            }
-        }
     }
     
     func delay(delay:Double, closure:()->()) {

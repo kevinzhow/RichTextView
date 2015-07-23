@@ -155,6 +155,28 @@ public class RichTextView: UITextView {
         
     }
     
+    public func findImageRange(imageHash: String) -> NSRange?{
+        
+        var finalRange: NSRange?
+        
+        self.attributedText.enumerateAttribute(RichTextViewImageAttributeName, inRange: NSRange(location: 0, length: self.attributedText.length), options: nil, usingBlock: { (value, range, finish) in
+            
+            if let value = value as? String {
+                if value == imageHash {
+                    finalRange = range
+                }
+            }
+
+        })
+        
+        if let finalRange = finalRange {
+            return finalRange
+        }
+        
+        return nil
+        
+    }
+    
     private func paragraphStyle(spacing: CGFloat) -> NSMutableParagraphStyle {
         
         var paragraphStyle = NSMutableParagraphStyle()
@@ -187,6 +209,33 @@ public class RichTextView: UITextView {
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
                 newAttributedText.insertAttributedString(attachmentAttributedString, atIndex: index)
+                
+                self.attributedText = newAttributedText
+            }
+        }
+    }
+    
+    public func replaceImage(imageName: String, image: UIImage, size: CGSize, index: Int){
+        
+        var attachment = NSTextAttachment(data: nil, ofType: nil)
+        attachment.image = image
+        attachment.bounds = CGRectMake(0, 0, size.width, size.height)
+        
+        if let attachmentAttributedString = NSAttributedString(attachment: attachment) as? NSMutableAttributedString {
+            // sets the paragraph styling of the text attachment
+            
+            var paragraphStyle = NSMutableParagraphStyle()
+            
+            paragraphStyle.paragraphSpacing = 10
+            
+            paragraphStyle.paragraphSpacingBefore = 10
+            
+            attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            
+            if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
+                
+                newAttributedText.replaceCharactersInRange(NSRange(location: index, length: 1), withAttributedString: attachmentAttributedString)
                 
                 self.attributedText = newAttributedText
             }

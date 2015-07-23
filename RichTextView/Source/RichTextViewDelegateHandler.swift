@@ -13,6 +13,7 @@ public class RichTextViewDelegateHandler: NSObject {
 }
 
 extension RichTextViewDelegateHandler: UITextViewDelegate {
+    
 
     public func textView(textView: UITextView, shouldInteractWithTextAttachment textAttachment: NSTextAttachment, inRange characterRange: NSRange) -> Bool {
         println("Should interact with Attachment")

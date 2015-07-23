@@ -28,6 +28,12 @@ public class RichTextView: UITextView {
     
     var richTextContainer = NSTextContainer()
     
+    public var linkGestureRecognizer: UITapGestureRecognizer?
+    
+    public let tapAreaInsets =  UIEdgeInsetsMake(-2, -2, -2, -2)
+    
+    public var tapHighLightColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
+    
     public var placeholder: String? {
         didSet {
             var attributes =  NSMutableDictionary()
@@ -69,11 +75,101 @@ public class RichTextView: UITextView {
         richLayoutManager.addTextContainer(richTextContainer)
         
         super.init(frame: frame, textContainer: richTextContainer)
+        
         initialize()
     }
     
     func initialize() {
+
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "textChanged", name: UITextViewTextDidChangeNotification, object: self)
+    }
+    
+    public override var editable: Bool {
+        didSet {
+            if editable {
+                
+                if let linkGestureRecognizer = linkGestureRecognizer {
+                    self.removeGestureRecognizer(linkGestureRecognizer)
+                }
+
+            } else {
+                linkGestureRecognizer = UITapGestureRecognizer(target: self, action: "linkAction:")
+                linkGestureRecognizer?.delegate = self
+                self.addGestureRecognizer(linkGestureRecognizer!)
+            }
+        }
+    }
+    
+    func linkAction(sender: UITapGestureRecognizer) {
+        
+        let location = sender.locationInView(self)
+        
+        enumerateLinkRangesContainingLocation(location, complete: { (range) -> Void in
+            println(range)
+        })
+    }
+    
+    func enumerateLinkRangesContainingLocation(location: CGPoint, complete: (NSRange) -> Void) {
+        var found = false
+        
+        self.attributedText.enumerateAttribute(RichTextViewDetectedDataHandlerAttributeName, inRange: NSMakeRange(0, attributedText.length), options: nil, usingBlock: { (value, range, stop) in
+            
+            if let value: AnyObject = value   {
+
+                self.enumerateViewRectsForRanges([NSValue(range: range)], complete: { (rect, range, stop) -> Void in
+                    
+                    if !found {
+                        if CGRectContainsPoint(rect, location) {
+                            
+                            self.drawRoundedCornerForRange(range, rect: rect)
+                            
+                            found = true
+                            
+                            complete(range)
+                        }
+                    } else {
+                        println("Found")
+                    }
+                })
+            }
+        })
+        
+        return
+    }
+    
+    func enumerateViewRectsForRanges(ranges: [NSValue], complete: (rect: CGRect, range: NSRange, stop: Bool) -> Void) {
+        
+        for rangeValue in ranges {
+            
+            let range = rangeValue.rangeValue
+            let glyphRange = layoutManager.glyphRangeForCharacterRange(range, actualCharacterRange: nil)
+            
+            layoutManager.enumerateEnclosingRectsForGlyphRange(glyphRange, withinSelectedGlyphRange: NSMakeRange(NSNotFound, 0), inTextContainer: textContainer, usingBlock: { (rect, stop) -> Void in
+                var rect = rect
+                rect.origin.x += self.textContainerInset.left
+                rect.origin.y += self.textContainerInset.top
+                rect = UIEdgeInsetsInsetRect(rect, self.tapAreaInsets)
+                
+                complete(rect: rect, range: range, stop: true)
+            })
+        }
+        
+        return
+    }
+    
+    func drawRoundedCornerForRange(range: NSRange, rect: CGRect) {
+
+        var layer = CALayer()
+        layer.frame = rect
+        layer.backgroundColor = tapHighLightColor.CGColor
+        layer.cornerRadius = 3.0
+        layer.masksToBounds = true
+        self.layer.addSublayer(layer)
+        
+        delay(0.2, closure: { () -> () in
+          layer.removeFromSuperlayer()
+        })
+        
     }
     
     func textChanged() {
@@ -276,25 +372,39 @@ public class RichTextView: UITextView {
         return rect;
     }
     
-//    override public func layoutSubviews() {
-//        super.layoutSubviews()
-//        
-//        if let attributedPlaceholder = attributedPlaceholder {
-//            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
-//                self.setNeedsDisplay()
-//            }
-//        }
-//    }
-//    
-//    override public func drawRect(rect: CGRect) {
-//        super.drawRect(rect)
-//        
-//        if let attributedPlaceholder = attributedPlaceholder {
-//            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
-//                var placeholderRect = placeholderRectForBounds(self.bounds)
-//                attributedPlaceholder.drawInRect(placeholderRect)
-//            }
-//        }
-//    }
-//    
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if let attributedPlaceholder = attributedPlaceholder {
+            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
+                self.setNeedsDisplay()
+            }
+        }
+    }
+    
+    override public func drawRect(rect: CGRect) {
+        super.drawRect(rect)
+        
+        if let attributedPlaceholder = attributedPlaceholder {
+            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
+                var placeholderRect = placeholderRectForBounds(self.bounds)
+                attributedPlaceholder.drawInRect(placeholderRect)
+            }
+        }
+    }
+    
+    func delay(delay:Double, closure:()->()) {
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(delay * Double(NSEC_PER_SEC))
+            ),
+            dispatch_get_main_queue(), closure)
+    }
+}
+
+extension RichTextView: UIGestureRecognizerDelegate {
+    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }

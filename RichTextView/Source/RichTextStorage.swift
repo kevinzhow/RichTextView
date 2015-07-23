@@ -51,6 +51,8 @@ public class RichTextStorage: NSTextStorage {
     
     var urlRanges = [NSRange]()
     
+    var tapAreaInsets = UIEdgeInsetsMake(-5, -5, -5, -5)
+    
     public var customRanges = [NSRange]()
     
     override public var string: String {
@@ -184,12 +186,6 @@ public class RichTextStorage: NSTextStorage {
         }
         
         super.processEditing()
-    }
-    
-    public func addTextAttributesOnRange(range: NSRange) {
-        beginEditing()
-
-        endEditing()
     }
     
     

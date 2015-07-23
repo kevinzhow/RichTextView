@@ -22,6 +22,12 @@ public class RichTextView: UITextView {
     
     public var currentDetactedData: ((string: String, dataType: DetectedDataType, range: NSRange) -> Void)?
     
+    var richTextStorage = RichTextStorage()
+    
+    var richLayoutManager = NSLayoutManager()
+    
+    var richTextContainer = NSTextContainer()
+    
     public var placeholder: String? {
         didSet {
             var attributes =  NSMutableDictionary()
@@ -46,7 +52,6 @@ public class RichTextView: UITextView {
         }
     }
     
-    
     public var attributedPlaceholder: NSAttributedString?
     
     override public init(frame: CGRect, textContainer: NSTextContainer?) {
@@ -56,6 +61,14 @@ public class RichTextView: UITextView {
     
     required public init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        initialize()
+    }
+    
+    init(frame: CGRect) {
+        richTextStorage.addLayoutManager(richLayoutManager)
+        richLayoutManager.addTextContainer(richTextContainer)
+        
+        super.init(frame: frame, textContainer: richTextContainer)
         initialize()
     }
     
@@ -125,6 +138,7 @@ public class RichTextView: UITextView {
             
             attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle(0), range: NSRange(location: 0, length: attachmentAttributedString.length))
             attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            attachmentAttributedString.addAttribute(RichTextViewDetectedDataHandlerAttributeName, value: DetectedDataType.Image.rawValue, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
@@ -205,6 +219,7 @@ public class RichTextView: UITextView {
             
             attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: attachmentAttributedString.length))
             attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            attachmentAttributedString.addAttribute(RichTextViewDetectedDataHandlerAttributeName, value: DetectedDataType.Image.rawValue, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
@@ -232,6 +247,7 @@ public class RichTextView: UITextView {
             
             attachmentAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: attachmentAttributedString.length))
             attachmentAttributedString.addAttribute(RichTextViewImageAttributeName, value: imageName, range: NSRange(location: 0, length: attachmentAttributedString.length))
+            attachmentAttributedString.addAttribute(RichTextViewDetectedDataHandlerAttributeName, value: DetectedDataType.Image.rawValue, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 

@@ -16,6 +16,7 @@ public enum DetectedDataType: Int, Printable{
     case HashTag
     case URL
     case Email
+    case Image
     case Custom
     
     public var description: String {
@@ -28,6 +29,8 @@ public enum DetectedDataType: Int, Printable{
             return "URL"
         case .Email:
             return "Email"
+        case .Image:
+            return "Image"
         case .Custom:
             return "Custom"
         }

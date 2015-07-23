@@ -15,23 +15,17 @@ class ViewController: UIViewController {
             
             let paraStyle = NSMutableParagraphStyle()
             
-            paraStyle.lineBreakMode = NSLineBreakMode.ByCharWrapping
+            paraStyle.lineBreakMode = NSLineBreakMode.ByWordWrapping
             
             return [NSFontAttributeName: UIFont.systemFontOfSize(15.0),
                 NSParagraphStyleAttributeName: paraStyle
             ]
         }
     }
-
-    var textStorage = RichTextStorage()
-    
-    var layoutManager = NSLayoutManager()
-    
-    var textContainer = NSTextContainer()
     
     @IBOutlet weak var replaceButton: UIButton!
     
-    var richTextViewDelegate =  RichTextViewDelegateHandler() //Subclass this to Modify your needs and Make sure it will retain
+    var richTextViewDelegate = RichTextViewDelegateHandler() //Subclass this to Modify your needs and Make sure it will retain
     
     var richTextView: RichTextView!
     
@@ -53,7 +47,7 @@ class ViewController: UIViewController {
     @IBAction func replaceWithUser(sender: AnyObject) {
         if let currentRange = currentRange {
             
-            textStorage.replaceCharactersInRange(currentRange, withString: "@kevinzhow")
+            richTextView.textStorage.replaceCharactersInRange(currentRange, withString: "@kevinzhow")
             
             richTextView.selectedRange = NSMakeRange(currentRange.location + "@kevinzhow".length, 0)
         }
@@ -62,13 +56,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        textStorage.addLayoutManager(layoutManager)
-
-        layoutManager.addTextContainer(textContainer)
+        richTextView = RichTextView(frame: CGRectZero)
         
-        richTextView = RichTextView(frame: CGRectZero, textContainer: textContainer)
+        richTextView.textContainer.lineBreakMode = NSLineBreakMode.ByWordWrapping
         
-        richTextView.textContainer.lineBreakMode = NSLineBreakMode.ByCharWrapping
+        richTextView.delaysContentTouches = false
         
 //        richTextView.textContainer.lineFragmentPadding = 0
         
@@ -82,9 +74,7 @@ class ViewController: UIViewController {
         
         richTextView.text = "I am @kevinzhow and My email is kevinchou.c@gmail.com #Catch# \n you can find my blog at http://zhowkev.in"
         
-//        richTextView.backgroundColor = UIColor.redColor()
-        
-        textStorage.defaultTextStyle = CommentReplyTextViewStyle
+        (richTextView.textStorage as! RichTextStorage).defaultTextStyle = CommentReplyTextViewStyle
         
         var newSize = sizeHeightWithText(richTextView.text, width: 350, textAttributes: CommentReplyTextViewStyle)
         
@@ -92,7 +82,7 @@ class ViewController: UIViewController {
         
 //        richTextView.placeholder = "Hello"
         
-        richTextView.editable = true // true for realtime editing
+        richTextView.editable = false // true for realtime editing
         
         richTextView.selectable = true
         

@@ -242,16 +242,6 @@ public class RichTextView: UITextView {
         }
     }
     
-    override public var delegate: UITextViewDelegate? {
-        
-        didSet {
-            if let delegate  = delegate as? RichTextViewDelegateHandler {
-                delegate.richTextView = self
-            }
-        }
-        
-    }
-    
     func placeholderRectForBounds(bounds: CGRect) -> CGRect {
         var rect = UIEdgeInsetsInsetRect(bounds, self.contentInset)
         
@@ -270,25 +260,25 @@ public class RichTextView: UITextView {
         return rect;
     }
     
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if let attributedPlaceholder = attributedPlaceholder {
-            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
-                self.setNeedsDisplay()
-            }
-        }
-    }
-    
-    override public func drawRect(rect: CGRect) {
-        super.drawRect(rect)
-        
-        if let attributedPlaceholder = attributedPlaceholder {
-            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
-                var placeholderRect = placeholderRectForBounds(self.bounds)
-                attributedPlaceholder.drawInRect(placeholderRect)
-            }
-        }
-    }
-    
+//    override public func layoutSubviews() {
+//        super.layoutSubviews()
+//        
+//        if let attributedPlaceholder = attributedPlaceholder {
+//            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
+//                self.setNeedsDisplay()
+//            }
+//        }
+//    }
+//    
+//    override public func drawRect(rect: CGRect) {
+//        super.drawRect(rect)
+//        
+//        if let attributedPlaceholder = attributedPlaceholder {
+//            if self.text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == 0 {
+//                var placeholderRect = placeholderRectForBounds(self.bounds)
+//                attributedPlaceholder.drawInRect(placeholderRect)
+//            }
+//        }
+//    }
+//    
 }

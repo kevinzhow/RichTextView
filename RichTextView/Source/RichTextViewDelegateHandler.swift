@@ -30,6 +30,7 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
             (textView as! RichTextView).handleClickedOnData(valueText, dataType: DetectedDataType(rawValue: dataType)!, range: characterRange)
 
         }
+        
         return true
     }
 

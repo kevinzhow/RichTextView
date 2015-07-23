@@ -105,7 +105,19 @@ public class RichTextView: UITextView {
         let location = sender.locationInView(self)
         
         enumerateLinkRangesContainingLocation(location, complete: { (range) -> Void in
-            println(range)
+
+            if let dataType = self.attributedText.attribute(RichTextViewDetectedDataHandlerAttributeName, atIndex: range.location, effectiveRange: nil) as? Int {
+                
+                var textString: NSString = self.text
+                
+                var valueText = textString.substringWithRange(range)
+                
+                self.handleClickedOnData(valueText, dataType: DetectedDataType(rawValue: dataType)!, range: range)
+                
+            } else if let dataType = self.attributedText.attribute(RichTextViewImageAttributeName, atIndex: range.location, effectiveRange: nil) as? String {
+                
+                self.handleClickedOnData(dataType, dataType: DetectedDataType.Image, range: range)
+            }
         })
     }
     
@@ -130,7 +142,7 @@ public class RichTextView: UITextView {
                             complete(range)
                         }
                     } else {
-                        println("Found")
+//                        println("Found")
                     }
                 })
             }
@@ -155,7 +167,7 @@ public class RichTextView: UITextView {
                             }
                             
                         } else {
-                            println("Found")
+//                            println("Found")
                         }
                     })
                 }

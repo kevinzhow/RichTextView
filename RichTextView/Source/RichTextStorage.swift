@@ -8,8 +8,9 @@
 
 import UIKit
 
-let RichTextViewDetectedDataHandlerAttributeName = "RichTextViewDetectedDataHandlerAttributeName"
-let RichTextViewImageAttributeName = "RichTextViewImageAttributeName"
+public let RichTextViewDetectedDataHandlerAttributeName = "RichTextViewDetectedDataHandlerAttributeName"
+public let RichTextViewImageAttributeName = "RichTextViewImageAttributeName"
+public let RichTextViewCustomDataAttributeName = "RichTextViewCustomDataAttributeName"
 
 public enum DetectedDataType: Int, Printable{
     case Mention = 0
@@ -79,9 +80,17 @@ public class RichTextStorage: NSTextStorage {
         endEditing()
     }
     
+    override public func addAttributes(attrs: [NSObject : AnyObject], range: NSRange) {
+        beginEditing()
+        backingStore.addAttributes(attrs, range: range)
+        edited(.EditedAttributes, range: range, changeInLength: 0)
+        endEditing()
+    }
+    
     override public func processEditing() {
         
         var paragraphRange = (self.string as NSString).paragraphRangeForRange(self.editedRange)
+        
         self.removeAttribute(NSForegroundColorAttributeName, range: paragraphRange)
         self.removeAttribute(NSLinkAttributeName, range: paragraphRange)
         self.removeAttribute(RichTextViewDetectedDataHandlerAttributeName, range: paragraphRange)

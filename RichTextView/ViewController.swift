@@ -31,14 +31,14 @@ class ViewController: UIViewController {
     
     var currentRange: NSRange?
     
-    func sizeHeightWithText(attrString: NSString, width: CGFloat, textAttributes: [NSObject : AnyObject]) -> CGSize {
+    func sizeHeightWithText(attrString: NSString, width: CGFloat, textAttributes: [String : AnyObject]) -> CGSize {
         
         //    var attributeString = NSAttributedString(string: attrString as String, attributes: textAttributes)
         
         //    var line = CTLineCreateWithAttributedString(attributeString)
         //    var bounds = CTLineGetBoundsWithOptions(line, CTLineBoundsOptions.UseGlyphPathBounds)
         
-        var rect = attrString.boundingRectWithSize(CGSizeMake(width, CGFloat.max), options: .UsesLineFragmentOrigin | .UsesFontLeading, attributes: textAttributes, context: nil)
+        let rect = attrString.boundingRectWithSize(CGSizeMake(width, CGFloat.max), options: [.UsesLineFragmentOrigin, .UsesFontLeading], attributes: textAttributes, context: nil)
         
         return CGSize(width: ceil(rect.width), height: ceil(rect.height))
     }
@@ -76,18 +76,18 @@ class ViewController: UIViewController {
         
         (richTextView.textStorage as! RichTextStorage).defaultTextStyle = CommentReplyTextViewStyle
         
-        var newSize = sizeHeightWithText(richTextView.text, width: 350, textAttributes: CommentReplyTextViewStyle)
+        let newSize = sizeHeightWithText(richTextView.text, width: 350, textAttributes: CommentReplyTextViewStyle)
         
         richTextView.frame = CGRect(x: 0, y: 20, width: 350 , height: newSize.height + 400)
         
 //        richTextView.placeholder = "Hello"
         
-        richTextView.editable = false // true for realtime editing
+        richTextView.editable = true // true for realtime editing
         
         richTextView.selectable = true
         
         richTextView.currentDetactedData = { (string, dataType, range) in
-            println("Current \(dataType.description) with \(string) at \(range)")
+            print("Current \(dataType.description) with \(string) at \(range)")
             
             self.currentRange = range
             
@@ -95,17 +95,17 @@ class ViewController: UIViewController {
         }
         
         richTextView.clickedOnData = { (string, dataType, range) in
-            println("Clicked On \(dataType.description) with \(string)")
+            print("Clicked On \(dataType.description) with \(string)")
         }
         
 //        richTextView.insertImage("smallWatch", image: UIImage(named: "WatchBlack")!, size: CGSize(width: 10, height: 10), index: 2)
         
 
         richTextView.appendImage("bigWatch", image: UIImage(named: "WatchBlack")!, width: view.frame.width - 10)
-        println(richTextView.attributedText)
-        var ranges = richTextView.findAllImageRange()
+        print(richTextView.attributedText)
+        let ranges = richTextView.findAllImageRange()
         
-        println(ranges)
+        print(ranges)
 
         view.addSubview(richTextView)
 

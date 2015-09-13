@@ -89,7 +89,7 @@ public class RichTextStorage: NSTextStorage {
     
     override public func processEditing() {
         
-        var paragraphRange = (self.string as NSString).paragraphRangeForRange(self.editedRange)
+        let paragraphRange = (self.string as NSString).paragraphRangeForRange(self.editedRange)
         
         self.removeAttribute(NSForegroundColorAttributeName, range: paragraphRange)
         self.removeAttribute(NSLinkAttributeName, range: paragraphRange)
@@ -109,17 +109,17 @@ public class RichTextStorage: NSTextStorage {
         
         //For Mention
         
-        var mentionPattern = "@[^\\s:：,，@]+$?"
+        let mentionPattern = "@[^\\s:：,，@]+$?"
         
-        var mentionExpression = try? NSRegularExpression(pattern: mentionPattern, options: NSRegularExpressionOptions())
+        let mentionExpression = try? NSRegularExpression(pattern: mentionPattern, options: NSRegularExpressionOptions())
         
         if let mentionExpression = mentionExpression {
             mentionExpression.enumerateMatchesInString(self.string, options: NSMatchingOptions(), range: paragraphRange, usingBlock: { (result, flags, stop) -> Void in
                 
                 if let result = result {
-                    var textValue = (self.string as NSString).substringWithRange(result.range)
+                    let textValue = (self.string as NSString).substringWithRange(result.range)
                     
-                    var textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Mention.rawValue]
+                    let textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Mention.rawValue]
                     
                     self.addAttributes(textAttributes, range: result.range )
                     
@@ -132,17 +132,17 @@ public class RichTextStorage: NSTextStorage {
         
         //For Link
         
-        var linkPattern = "[a-zA-Z]+://[0-9a-zA-Z_.?&/=]+"
+        let linkPattern = "[a-zA-Z]+://[0-9a-zA-Z_.?&/=]+"
         
-        var linkExpression = try? NSRegularExpression(pattern: linkPattern, options: NSRegularExpressionOptions())
+        let linkExpression = try? NSRegularExpression(pattern: linkPattern, options: NSRegularExpressionOptions())
         
         if let linkExpression = linkExpression {
             linkExpression.enumerateMatchesInString(self.string, options: NSMatchingOptions(), range: paragraphRange, usingBlock: { (result, flags, stop) -> Void in
                 
                 if let result = result {
-                    var textValue = (self.string as NSString).substringWithRange(result.range)
+                    let textValue = (self.string as NSString).substringWithRange(result.range)
                     
-                    var textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.URL.rawValue]
+                    let textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.URL.rawValue]
                     
                     self.addAttributes(textAttributes, range: result.range )
                     
@@ -155,17 +155,17 @@ public class RichTextStorage: NSTextStorage {
         
         //For HashTag
         
-        var hashTagPattern = "#.+?#"
+        let hashTagPattern = "#.+?#"
         
-        var hashTagExpression = try? NSRegularExpression(pattern: hashTagPattern, options: NSRegularExpressionOptions())
+        let hashTagExpression = try? NSRegularExpression(pattern: hashTagPattern, options: NSRegularExpressionOptions())
         
         if let hashTagExpression = hashTagExpression {
             hashTagExpression.enumerateMatchesInString(self.string, options: NSMatchingOptions(), range: paragraphRange, usingBlock: { (result, flags, stop) -> Void in
                 
                 if let result = result {
-                    var textValue = (self.string as NSString).substringWithRange(result.range)
+                    let textValue = (self.string as NSString).substringWithRange(result.range)
                     
-                    var textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.HashTag.rawValue]
+                    let textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.HashTag.rawValue]
                     
                     self.addAttributes(textAttributes, range: result.range )
                     
@@ -177,17 +177,17 @@ public class RichTextStorage: NSTextStorage {
         
         //For Email
         
-        var emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]+"
+        let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]+"
         
-        var emailExpression = try? NSRegularExpression(pattern: emailPattern, options: NSRegularExpressionOptions())
+        let emailExpression = try? NSRegularExpression(pattern: emailPattern, options: NSRegularExpressionOptions())
         
         if let emailExpression = emailExpression {
             emailExpression.enumerateMatchesInString(self.string, options: NSMatchingOptions(), range: paragraphRange, usingBlock: { (result, flags, stop) -> Void in
                 
                 if let result = result {
-                    var textValue = (self.string as NSString).substringWithRange(result.range)
+                    let textValue = (self.string as NSString).substringWithRange(result.range)
                     
-                    var textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Email.rawValue]
+                    let textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: textValue, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Email.rawValue]
                     
                     self.addAttributes(textAttributes, range: result.range )
                     
@@ -200,7 +200,7 @@ public class RichTextStorage: NSTextStorage {
         //For Custom Range
         
         for range in customRanges {
-            var textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: "CustomRange", RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Custom.rawValue]
+            let textAttributes: [String : AnyObject]! = [NSForegroundColorAttributeName: UIColor.blueColor(), NSLinkAttributeName: "CustomRange", RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Custom.rawValue]
             
             self.addAttributes(textAttributes, range: range )
         }

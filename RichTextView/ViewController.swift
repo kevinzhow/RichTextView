@@ -10,15 +10,15 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var CommentReplyTextViewStyle : [String : AnyObject] {
+    var CommentReplyTextViewStyle : [NSAttributedString.Key : Any] {
         get {
             
             let paraStyle = NSMutableParagraphStyle()
             
-            paraStyle.lineBreakMode = NSLineBreakMode.ByWordWrapping
+            paraStyle.lineBreakMode = .byWordWrapping
             
-            return [NSFontAttributeName: UIFont.systemFontOfSize(15.0),
-                NSParagraphStyleAttributeName: paraStyle
+            return [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15.0),
+                NSAttributedString.Key.paragraphStyle: paraStyle
             ]
         }
     }
@@ -26,19 +26,38 @@ class ViewController: UIViewController {
     @IBOutlet weak var replaceButton: UIButton!
     
     var richTextViewDelegate = RichTextViewDelegateHandler() //Subclass this to Modify your needs and Make sure it will retain
+
     
-    var richTextView: RichTextView!
+    lazy var richTextView: RichTextView = {
+        let view = RichTextView(frame: CGRect.zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.textContainer.lineBreakMode = .byWordWrapping
+        
+        view.delaysContentTouches = false
+        
+        //        richTextView.textContainer.lineFragmentPadding = 0
+        
+        view.font = UIFont.systemFont(ofSize: 15.0)
+        
+        view.isScrollEnabled = true
+        view.textContainerInset = UIEdgeInsets.zero
+        view.isEditable = true // true for realtime editing
+        
+        view.isSelectable = true
+         (view.textStorage as! RichTextStorage).defaultTextStyle = CommentReplyTextViewStyle
+        return view
+    }()
     
     var currentRange: NSRange?
     
-    func sizeHeightWithText(attrString: NSString, width: CGFloat, textAttributes: [String : AnyObject]) -> CGSize {
+    func sizeHeightWithText(attrString: NSString, width: CGFloat, textAttributes: [NSAttributedString.Key : Any]) -> CGSize {
         
         //    var attributeString = NSAttributedString(string: attrString as String, attributes: textAttributes)
         
         //    var line = CTLineCreateWithAttributedString(attributeString)
         //    var bounds = CTLineGetBoundsWithOptions(line, CTLineBoundsOptions.UseGlyphPathBounds)
         
-        let rect = attrString.boundingRectWithSize(CGSizeMake(width, CGFloat.max), options: [.UsesLineFragmentOrigin, .UsesFontLeading], attributes: textAttributes, context: nil)
+        let rect = attrString.boundingRect(with: CGSize(width: width, height:CGFloat.greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: textAttributes, context: nil)
         
         return CGSize(width: ceil(rect.width), height: ceil(rect.height))
     }
@@ -47,44 +66,19 @@ class ViewController: UIViewController {
     @IBAction func replaceWithUser(sender: AnyObject) {
         if let currentRange = currentRange {
             
-            richTextView.textStorage.replaceCharactersInRange(currentRange, withString: "@kevinzhow")
+            richTextView.textStorage.replaceCharacters(in: currentRange, with: "@kevinzhow")
             
-            richTextView.selectedRange = NSMakeRange(currentRange.location + "@kevinzhow".length, 0)
+            richTextView.selectedRange = NSMakeRange(currentRange.location + "@kevinzhow".count, 0)
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        richTextView = RichTextView(frame: CGRectZero)
-        
-        richTextView.textContainer.lineBreakMode = NSLineBreakMode.ByWordWrapping
-        
-        richTextView.delaysContentTouches = false
-        
-//        richTextView.textContainer.lineFragmentPadding = 0
-        
-        richTextView.textContainerInset = UIEdgeInsetsZero
-        
         richTextView.delegate = richTextViewDelegate
-        
-        richTextView.font = UIFont.systemFontOfSize(15.0)
-        
-        richTextView.scrollEnabled = true
-        
         richTextView.text = "I am @kevinzhow and My email is kevinchou.c@gmail.com #Catch# \n you can find my blog at http://zhowkev.in"
         
-        (richTextView.textStorage as! RichTextStorage).defaultTextStyle = CommentReplyTextViewStyle
-        
-        let newSize = sizeHeightWithText(richTextView.text, width: 350, textAttributes: CommentReplyTextViewStyle)
-        
-        richTextView.frame = CGRect(x: 0, y: 20, width: 350 , height: newSize.height + 400)
-        
-//        richTextView.placeholder = "Hello"
-        
-        richTextView.editable = true // true for realtime editing
-        
-        richTextView.selectable = true
+        _ = sizeHeightWithText(attrString: richTextView.text! as NSString, width: 350, textAttributes: CommentReplyTextViewStyle)
         
         richTextView.currentDetactedData = { (string, dataType, range) in
             print("Current \(dataType.description) with \(string) at \(range)")
@@ -100,14 +94,21 @@ class ViewController: UIViewController {
         
 //        richTextView.insertImage("smallWatch", image: UIImage(named: "WatchBlack")!, size: CGSize(width: 10, height: 10), index: 2)
         
-
-        richTextView.appendImage("bigWatch", image: UIImage(named: "WatchBlack")!, width: view.frame.width - 10)
+        let imageWidth = self.view.frame.width - 10
+        richTextView.appendImage(imageName: "bigWatch", image: UIImage(named: "WatchBlack")!, width: imageWidth)
+        
         print(richTextView.attributedText)
         let ranges = richTextView.findAllImageRange()
         
         print(ranges)
 
         view.addSubview(richTextView)
+        
+        richTextView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor).isActive = true
+        richTextView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor).isActive = true
+        richTextView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor).isActive = true
+        richTextView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor).isActive = true
+        
 
         // Do any additional setup after loading the view, typically from a nib.
     }

@@ -14,32 +14,34 @@ public class RichTextViewDelegateHandler: NSObject {
 extension RichTextViewDelegateHandler: UITextViewDelegate {
     
 
-    public func textView(textView: UITextView, shouldInteractWithTextAttachment textAttachment: NSTextAttachment, inRange characterRange: NSRange) -> Bool {
+    public func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         print("Should interact with Attachment")
         return true
     }
-
-    public func textView(textView: UITextView, shouldInteractWithURL URL: NSURL, inRange characterRange: NSRange) -> Bool {
-
-        let textString: NSString = textView.text
-
-        let valueText = textString.substringWithRange(characterRange)
-
-        if let dataType = textView.attributedText.attribute(RichTextViewDetectedDataHandlerAttributeName, atIndex: characterRange.location, effectiveRange: nil) as? Int {
-
-            (textView as! RichTextView).handleClickedOnData(valueText, dataType: DetectedDataType(rawValue: dataType)!, range: characterRange)
-
+    
+    public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        let textString: NSString = textView.text! as NSString
+        
+        let valueText = textString.substring(with: characterRange)
+        
+        guard let textViewAttributedText = textView.attributedText else {return false}
+        
+        if let dataType = textViewAttributedText.attribute(NSAttributedString.Key(rawValue: RichTextViewDetectedDataHandlerAttributeName), at:  characterRange.location, effectiveRange: nil) as? Int {
+            
+            (textView as! RichTextView).handleClickedOnData(string: valueText, dataType: DetectedDataType(rawValue: dataType)!, range: characterRange)
+            
         }
         
         return true
     }
+    
 
     func textViewCurrentDetactedString(textView: UITextView, string: String, dataType: DetectedDataType, range: NSRange) {
-        (textView as! RichTextView).handleCurrentDetactedData(string, dataType: dataType, range: range)
+        (textView as! RichTextView).handleCurrentDetactedData(string: string, dataType: dataType, range: range)
     }
 
 
-    public func textViewDidChange(textView: UITextView) {
+    public func textViewDidChange(_ textView: UITextView) {
 
         if let textStorage = textView.layoutManager.textStorage as? RichTextStorage {
 
@@ -49,9 +51,9 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
                 if range.location >= targetLocation || range.location + range.length >= targetLocation {
 
 
-                    let textValue = (textStorage.string as NSString).substringWithRange(range)
+                    let textValue = (textStorage.string as NSString).substring(with: range)
 
-                    textViewCurrentDetactedString(textView, string: textValue, dataType: DetectedDataType.Mention, range: range)
+                    textViewCurrentDetactedString(textView: textView, string: textValue, dataType: DetectedDataType.Mention, range: range)
 
                     return
                 }
@@ -60,9 +62,9 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
             for range in textStorage.emailRanges {
                 if range.location >= targetLocation || range.location + range.length >= targetLocation {
 
-                    let textValue = (textStorage.string as NSString).substringWithRange(range)
+                    let textValue = (textStorage.string as NSString).substring(with: range)
 
-                    textViewCurrentDetactedString(textView, string: textValue, dataType: DetectedDataType.Email, range: range)
+                    textViewCurrentDetactedString(textView: textView, string: textValue, dataType: DetectedDataType.Email, range: range)
 
                     return
                 }
@@ -71,9 +73,9 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
             for range in textStorage.urlRanges {
                 if range.location >= targetLocation || range.location + range.length >= targetLocation {
 
-                    let textValue = (textStorage.string as NSString).substringWithRange(range)
+                    let textValue = (textStorage.string as NSString).substring(with: range)
 
-                    textViewCurrentDetactedString(textView, string: textValue, dataType: DetectedDataType.URL, range: range)
+                    textViewCurrentDetactedString(textView: textView, string: textValue, dataType: DetectedDataType.URL, range: range)
 
                     return
                 }
@@ -82,9 +84,9 @@ extension RichTextViewDelegateHandler: UITextViewDelegate {
             for range in textStorage.hashTagRanges {
                 if range.location >= targetLocation || range.location + range.length >= targetLocation {
 
-                    let textValue = (textStorage.string as NSString).substringWithRange(range)
+                    let textValue = (textStorage.string as NSString).substring(with: range)
 
-                    textViewCurrentDetactedString(textView, string: textValue, dataType: DetectedDataType.HashTag, range: range)
+                    textViewCurrentDetactedString(textView: textView, string: textValue, dataType: DetectedDataType.HashTag, range: range)
 
                     return
                 }

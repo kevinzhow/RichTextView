@@ -18,9 +18,9 @@ public class RichTextView: UITextView {
     }
     */
     
-    public var clickedOnData: ((string: String, dataType: DetectedDataType, range: NSRange) -> Void)?
+    public var clickedOnData: ((_ string: String, _ dataType: DetectedDataType, _ range: NSRange) -> Void)?
     
-    public var currentDetactedData: ((string: String, dataType: DetectedDataType, range: NSRange) -> Void)?
+    public var currentDetactedData: ((_ string: String, _ dataType: DetectedDataType, _ range: NSRange) -> Void)?
     
     var richTextStorage = RichTextStorage()
     
@@ -28,33 +28,33 @@ public class RichTextView: UITextView {
     
     var richTextContainer = NSTextContainer()
     
-    public var placeHolderLabel = UILabel(frame: CGRectZero)
+    public var placeHolderLabel = UILabel(frame: CGRect.zero)
     
     public var shouldUpdate = true
     
     public var linkGestureRecognizer: UITapGestureRecognizer?
     
-    public let tapAreaInsets =  UIEdgeInsetsMake(-2, -2, -2, -2)
+    public let tapAreaInsets =  UIEdgeInsets(top: -2, left: -2, bottom: -2, right: -2)
     
-    public var tapHighLightColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
+    public var tapHighLightColor = UIColor.black.withAlphaComponent(0.2)
     
     public var placeholder: String? {
         didSet {
-            var attributes = [String: AnyObject]()
+            var attributes = [NSAttributedString.Key: Any]()
             
-            if typingAttributes.count > 0 && isFirstResponder() {
+            if typingAttributes.count > 0 && isFirstResponder {
                 attributes = typingAttributes
             } else {
                 if let font = font {
-                    attributes[NSFontAttributeName] = font
+                    attributes[NSAttributedString.Key.font] = font
                 }
                 
-                attributes[NSForegroundColorAttributeName] = UIColor(white: 0.7, alpha: 1.0)
+                attributes[NSAttributedString.Key.foregroundColor] = UIColor(white: 0.7, alpha: 1.0)
                 
-                if textAlignment != NSTextAlignment.Left {
+                if textAlignment != NSTextAlignment.left {
                     let paragraph = NSMutableParagraphStyle()
                     paragraph.alignment = textAlignment
-                    attributes[NSParagraphStyleAttributeName] = paragraph
+                    attributes[NSAttributedString.Key.paragraphStyle] = paragraph
                 }
             }
             
@@ -73,7 +73,7 @@ public class RichTextView: UITextView {
         
         placeHolderLabel.sizeToFit()
 
-        placeHolderLabel.frame = placeholderRectForBounds(placeHolderLabel.bounds)
+        placeHolderLabel.frame = placeholderRectForBounds(bounds: placeHolderLabel.bounds)
     }
     
     override public init(frame: CGRect, textContainer: NSTextContainer?) {
@@ -97,65 +97,65 @@ public class RichTextView: UITextView {
     
     func initialize() {
 
-        placeHolderLabel.hidden = false
+        placeHolderLabel.isHidden = false
         
         addSubview(placeHolderLabel)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "textChanged", name: UITextViewTextDidChangeNotification, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(textChanged), name: UITextView.textDidChangeNotification, object: self)
     }
     
-    public override var editable: Bool {
+    public override var isEditable: Bool {
         didSet {
-            if editable {
+            if isEditable {
                 
                 if let linkGestureRecognizer = linkGestureRecognizer {
                     self.removeGestureRecognizer(linkGestureRecognizer)
                 }
 
             } else {
-                linkGestureRecognizer = UITapGestureRecognizer(target: self, action: "linkAction:")
+                linkGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(linkAction))
                 linkGestureRecognizer?.delegate = self
                 self.addGestureRecognizer(linkGestureRecognizer!)
             }
         }
     }
     
-    func linkAction(sender: UITapGestureRecognizer) {
+    @objc func linkAction(sender: UITapGestureRecognizer) {
         
-        let location = sender.locationInView(self)
+        let location = sender.location(in: self)
         
-        enumerateLinkRangesContainingLocation(location, complete: { (range) -> Void in
+        enumerateLinkRangesContainingLocation(location: location, complete: { (range) -> Void in
 
-            if let dataType = self.attributedText.attribute(RichTextViewDetectedDataHandlerAttributeName, atIndex: range.location, effectiveRange: nil) as? Int {
+            if let dataType = self.attributedText?.attribute(NSAttributedString.Key.init(RichTextViewDetectedDataHandlerAttributeName), at: range.location, effectiveRange: nil) as? Int {
                 
-                let textString: NSString = self.text
+                let textString: NSString = self.text! as NSString
                 
-                let valueText = textString.substringWithRange(range)
+                let valueText = textString.substring(with: range)
                 
-                self.handleClickedOnData(valueText, dataType: DetectedDataType(rawValue: dataType)!, range: range)
+                self.handleClickedOnData(string: valueText, dataType: DetectedDataType(rawValue: dataType)!, range: range)
                 
-            } else if let dataType = self.attributedText.attribute(RichTextViewImageAttributeName, atIndex: range.location, effectiveRange: nil) as? String {
+            } else if let dataType = self.attributedText?.attribute(NSAttributedString.Key.init(RichTextViewImageAttributeName), at: range.location, effectiveRange: nil) as? String {
                 
-                self.handleClickedOnData(dataType, dataType: DetectedDataType.Image, range: range)
+                self.handleClickedOnData(string: dataType, dataType: DetectedDataType.Image, range: range)
             }
         })
     }
     
-    func enumerateLinkRangesContainingLocation(location: CGPoint, complete: (NSRange) -> Void) {
+    func enumerateLinkRangesContainingLocation(location: CGPoint, complete: @escaping (NSRange) -> Void) {
         
         var found = false
         
-        self.attributedText.enumerateAttribute(RichTextViewDetectedDataHandlerAttributeName, inRange: NSMakeRange(0, attributedText.length), options: [], usingBlock: { (value, range, stop) in
+        self.attributedText.enumerateAttribute(NSAttributedString.Key(rawValue: RichTextViewDetectedDataHandlerAttributeName), in: NSMakeRange(0, attributedText.length), options: [], using: { (value, range, stop) in
             
-            if let _: AnyObject = value   {
+            if let _: AnyObject = value as AnyObject   {
                 
                 self.enumerateViewRectsForRanges([NSValue(range: range)], complete: { (rect, range, stop) -> Void in
                     
                     if !found {
                         
-                        if CGRectContainsPoint(rect, location) {
+                        if rect.contains(location) {
                             
-                            self.drawRoundedCornerForRange(range, rect: rect)
+                            self.drawRoundedCornerForRange(range: range, rect: rect)
                             
                             found = true
                             
@@ -169,7 +169,7 @@ public class RichTextView: UITextView {
         })
         
         if !found {
-            self.attributedText.enumerateAttribute(RichTextViewImageAttributeName, inRange: NSMakeRange(0, attributedText.length), options: [], usingBlock: { (value, range, stop) in
+            self.attributedText.enumerateAttribute(NSAttributedString.Key(rawValue: RichTextViewImageAttributeName), in: NSMakeRange(0, attributedText.length), options: [], using: { (value, range, stop) in
                 
                 if let _ = value   {
                     
@@ -177,9 +177,9 @@ public class RichTextView: UITextView {
                         
                         if !found {
                             
-                            if CGRectContainsPoint(rect, location) {
+                            if rect.contains(location) {
                                 
-                                self.drawRoundedCornerForRange(range, rect: rect)
+                                self.drawRoundedCornerForRange(range: range, rect: rect)
                                 
                                 found = true
                                 
@@ -197,22 +197,22 @@ public class RichTextView: UITextView {
         return
     }
     
-    func enumerateViewRectsForRanges(ranges: [NSValue], complete: (rect: CGRect, range: NSRange, stop: Bool) -> Void) {
+    func enumerateViewRectsForRanges(_ ranges: [NSValue], complete: @escaping (_ rect: CGRect, _ range: NSRange, _ stop: Bool) -> Void) {
         
         for rangeValue in ranges {
             
             let range = rangeValue.rangeValue
             
-            let glyphRange = layoutManager.glyphRangeForCharacterRange(range, actualCharacterRange: nil)
+            let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
             
-            layoutManager.enumerateEnclosingRectsForGlyphRange(glyphRange, withinSelectedGlyphRange: NSMakeRange(NSNotFound, 0), inTextContainer: textContainer, usingBlock: { (rect, stop) -> Void in
+            layoutManager.enumerateEnclosingRects(forGlyphRange: glyphRange, withinSelectedGlyphRange: NSMakeRange(NSNotFound, 0), in: textContainer, using: { (rect, stop) -> Void in
                 var rect = rect
                 
                 rect.origin.x += self.textContainerInset.left
                 rect.origin.y += self.textContainerInset.top
-                rect = UIEdgeInsetsInsetRect(rect, self.tapAreaInsets)
+                rect = rect.inset(by: self.tapAreaInsets)
                 
-                complete(rect: rect, range: range, stop: true)
+                complete(rect, range, true)
             })
             
         }
@@ -224,23 +224,23 @@ public class RichTextView: UITextView {
 
         let layer = CALayer()
         layer.frame = rect
-        layer.backgroundColor = tapHighLightColor.CGColor
+        layer.backgroundColor = tapHighLightColor.cgColor
         layer.cornerRadius = 3.0
         layer.masksToBounds = true
         self.layer.addSublayer(layer)
         
-        delay(0.2, closure: { () -> () in
+        delay(delay: 0.2, closure: { () -> () in
           layer.removeFromSuperlayer()
         })
         
     }
     
-    func textChanged() {
+    @objc func textChanged() {
         if let _ = attributedPlaceholder {
             if (text as NSString).length == 0 {
-                placeHolderLabel.hidden = false
+                placeHolderLabel.isHidden = false
             } else {
-                placeHolderLabel.hidden = true
+                placeHolderLabel.isHidden = true
             }
         }
 
@@ -249,13 +249,13 @@ public class RichTextView: UITextView {
     
     func handleClickedOnData(string: String, dataType: DetectedDataType, range: NSRange ){
         if let clickedOnData = clickedOnData {
-            clickedOnData(string: string, dataType: dataType, range: range)
+            clickedOnData(string, dataType, range)
         }
     }
     
     func handleCurrentDetactedData(string: String, dataType: DetectedDataType, range: NSRange) {
         if let currentDetactedData = currentDetactedData {
-            currentDetactedData(string: string, dataType: dataType, range: range)
+            currentDetactedData(string, dataType, range)
         }
     }
     
@@ -263,9 +263,9 @@ public class RichTextView: UITextView {
         
         if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
             
-            newAttributedText.appendAttributedString(NSAttributedString(string: "\n"))
+            newAttributedText.append(NSAttributedString(string: "\n"))
             
-            var _ = text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+            var _ = text.lengthOfBytes(using: String.Encoding.utf8)
             
             self.attributedText = newAttributedText
             
@@ -273,7 +273,8 @@ public class RichTextView: UITextView {
             
             let radio:CGFloat = width / imageWidth
             
-            appendImage(imageName, image: image, size: CGSize(width: image.size.width*radio, height: image.size.height*radio))
+            let size = CGSize(width: image.size.width*radio, height: image.size.height*radio)
+            appendImage(imageName: imageName, image: image, size: size)
             
             appendNewLine()
         }
@@ -285,9 +286,9 @@ public class RichTextView: UITextView {
             
             let newLineString = NSMutableAttributedString(string: "\n")
             
-            newLineString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle(0), range: NSRange(location: 0, length: newLineString.length))
+            newLineString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle(spacing: 0), range: NSRange(location: 0, length: newLineString.length))
             
-            newAttributedText.appendAttributedString(newLineString)
+            newAttributedText.append(newLineString)
             
             attributedText = newAttributedText
         }
@@ -298,19 +299,19 @@ public class RichTextView: UITextView {
         
         let attachment = NSTextAttachment(data: nil, ofType: nil)
         attachment.image = image
-        attachment.bounds = CGRectMake(0, 0, size.width, size.height)
+        attachment.bounds = CGRect(x: 0, y:0, width:size.width, height:size.height)
         
         if let attachmentAttributedString = NSAttributedString(attachment: attachment) as? NSMutableAttributedString {
             // sets the paragraph styling of the text attachment
             
             
-            let attr: [String: AnyObject] = [NSParagraphStyleAttributeName: paragraphStyle(0), RichTextViewImageAttributeName: imageName, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Image.rawValue]
+            let attr: [NSAttributedString.Key: Any] = [NSAttributedString.Key.paragraphStyle: paragraphStyle(spacing: 0), NSAttributedString.Key(rawValue: RichTextViewImageAttributeName): imageName, NSAttributedString.Key(rawValue: RichTextViewDetectedDataHandlerAttributeName): DetectedDataType.Image.rawValue]
             
             attachmentAttributedString.addAttributes(attr, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
-                newAttributedText.appendAttributedString(attachmentAttributedString)
+                newAttributedText.append(attachmentAttributedString)
                 
                 self.attributedText = newAttributedText
             }
@@ -321,7 +322,7 @@ public class RichTextView: UITextView {
         
         var finalRange = [[String : NSRange]]()
         
-        self.attributedText.enumerateAttribute(RichTextViewImageAttributeName, inRange: NSRange(location: 0, length: self.attributedText.length), options: [], usingBlock: { (value, range, finish) in
+        self.attributedText.enumerateAttribute(NSAttributedString.Key(rawValue: RichTextViewImageAttributeName), in: NSRange(location: 0, length: self.attributedText.length), options: [], using: { (value, range, finish) in
             
             if let value = value as? String {
                 finalRange.append([value :  range])
@@ -341,7 +342,7 @@ public class RichTextView: UITextView {
         
         var finalRange: NSRange?
         
-        self.attributedText.enumerateAttribute(RichTextViewImageAttributeName, inRange: NSRange(location: 0, length: self.attributedText.length), options: [], usingBlock: { (value, range, finish) in
+        self.attributedText.enumerateAttribute(NSAttributedString.Key(rawValue: RichTextViewImageAttributeName), in: NSRange(location: 0, length: self.attributedText.length), options: [], using: { (value, range, finish) in
             
             if let value = value as? String {
                 if value == imageHash {
@@ -374,7 +375,7 @@ public class RichTextView: UITextView {
         
         let attachment = NSTextAttachment(data: nil, ofType: nil)
         attachment.image = image
-        attachment.bounds = CGRectMake(0, 0, size.width, size.height)
+        attachment.bounds = CGRect(x:0, y:0, width:size.width, height:size.height)
         
         if let attachmentAttributedString = NSAttributedString(attachment: attachment) as? NSMutableAttributedString {
             // sets the paragraph styling of the text attachment
@@ -385,13 +386,13 @@ public class RichTextView: UITextView {
             
             paragraphStyle.paragraphSpacingBefore = 10
             
-            let attr: [String: AnyObject] = [NSParagraphStyleAttributeName: paragraphStyle, RichTextViewImageAttributeName: imageName, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Image.rawValue]
+            let attr: [NSAttributedString.Key: Any] = [NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key(rawValue: RichTextViewImageAttributeName): imageName, NSAttributedString.Key(rawValue: RichTextViewDetectedDataHandlerAttributeName): DetectedDataType.Image.rawValue]
             
             attachmentAttributedString.addAttributes(attr, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
-                newAttributedText.insertAttributedString(attachmentAttributedString, atIndex: index)
+                newAttributedText.insert(attachmentAttributedString, at: index)
                 
                 self.attributedText = newAttributedText
             }
@@ -402,7 +403,7 @@ public class RichTextView: UITextView {
         
         let attachment = NSTextAttachment(data: nil, ofType: nil)
         attachment.image = image
-        attachment.bounds = CGRectMake(0, 0, size.width, size.height)
+        attachment.bounds = CGRect(x:0, y:0, width:size.width, height:size.height)
         
         if let attachmentAttributedString = NSAttributedString(attachment: attachment) as? NSMutableAttributedString {
             // sets the paragraph styling of the text attachment
@@ -413,13 +414,13 @@ public class RichTextView: UITextView {
             
             paragraphStyle.paragraphSpacingBefore = 10
             
-            let attr: [String: AnyObject] = [NSParagraphStyleAttributeName: paragraphStyle, RichTextViewImageAttributeName: imageName, RichTextViewDetectedDataHandlerAttributeName: DetectedDataType.Image.rawValue]
+            let attr: [NSAttributedString.Key: Any] = [NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key(rawValue: RichTextViewImageAttributeName): imageName, NSAttributedString.Key(rawValue: RichTextViewDetectedDataHandlerAttributeName): DetectedDataType.Image.rawValue]
             
             attachmentAttributedString.addAttributes(attr, range: NSRange(location: 0, length: attachmentAttributedString.length))
             
             if let newAttributedText = self.attributedText.mutableCopy() as? NSMutableAttributedString {
                 
-                newAttributedText.replaceCharactersInRange(NSRange(location: index, length: 1), withAttributedString: attachmentAttributedString)
+                newAttributedText.replaceCharacters(in: NSRange(location: index, length: 1), with: attachmentAttributedString)
                 
                 self.attributedText = newAttributedText
             }
@@ -429,7 +430,7 @@ public class RichTextView: UITextView {
     func placeholderRectForBounds(bounds: CGRect) -> CGRect {
         var rect = bounds
         
-        if self.respondsToSelector("textContainer") {
+        if self.responds(to: #selector(getter: UITextView.textContainer)) {
             let padding = self.textContainer.lineFragmentPadding
             rect.origin.x += padding
             rect.origin.y += padding * 1.5
@@ -443,18 +444,15 @@ public class RichTextView: UITextView {
         return rect;
     }
     
-    func delay(delay:Double, closure:()->()) {
-        dispatch_after(
-            dispatch_time(
-                DISPATCH_TIME_NOW,
-                Int64(delay * Double(NSEC_PER_SEC))
-            ),
-            dispatch_get_main_queue(), closure)
+    func delay(delay:Double, closure:@escaping ()->()) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            closure()
+        }
     }
 }
 
 extension RichTextView: UIGestureRecognizerDelegate {
-    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 }
